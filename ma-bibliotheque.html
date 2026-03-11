@@ -8,394 +8,491 @@
 <meta name="apple-mobile-web-app-title" content="Ma Bib">
 <title>Ma Bibliothèque</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 :root {
-  --bg:#faf6f0; --card-bg:#fff; --brown:#2c1a00; --mid:#4a2c00;
+  --bg:#faf6f0; --white:#fff; --brown:#2c1a00; --mid:#4a2c00;
   --gold:#c8933a; --gold-l:#e8d5b0; --muted:#8a6a40;
-  --red:#d63031; --orange:#e17055; --yellow:#fdcb6e; --green:#00b894;
-  --radius:16px; --safe-b:env(safe-area-inset-bottom, 0px);
+  --red:#d63031; --orange:#e17055; --green:#00b894;
+  --safe-b:env(safe-area-inset-bottom,0px);
 }
-html, body { height:100%; background:#1a0a00; }
-body { font-family:Georgia,'Times New Roman',serif; display:flex; flex-direction:column; max-width:430px; margin:0 auto; background:var(--bg); min-height:100dvh; }
+html,body { height:100%; background:#1a0a00; overflow:hidden; }
+body {
+  font-family:Georgia,'Times New Roman',serif;
+  display:flex; flex-direction:column;
+  max-width:430px; margin:0 auto;
+  background:var(--bg);
+  height:100dvh;
+}
 
-/* SETUP */
-#setup-screen { position:fixed; inset:0; background:linear-gradient(160deg,#1a0a00 0%,#3d1c00 100%); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; overflow-y:auto; }
-#setup-screen.hidden { display:none; }
-.setup-logo { font-size:64px; margin-bottom:12px; }
-.setup-title { color:var(--gold); font-size:26px; font-weight:bold; margin-bottom:4px; text-align:center; }
-.setup-sub { color:#a07040; font-size:12px; font-family:sans-serif; margin-bottom:36px; text-align:center; letter-spacing:0.5px; }
-.setup-card { background:rgba(255,255,255,0.06); border:1px solid rgba(200,147,58,0.3); border-radius:20px; padding:24px; width:100%; max-width:360px; margin-bottom:16px; }
-.setup-card h3 { color:var(--gold); font-size:15px; margin-bottom:16px; font-family:sans-serif; letter-spacing:0.5px; }
-.setup-field { margin-bottom:16px; }
-.setup-field label { display:block; color:#a07040; font-size:10px; font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:6px; }
-.setup-field input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid rgba(200,147,58,0.3); background:rgba(0,0,0,0.3); color:#fff; font-size:16px; font-family:monospace; outline:none; letter-spacing:1px; }
-.setup-field input::placeholder { color:#604030; letter-spacing:0; font-size:14px; }
-.setup-field input:focus { border-color:var(--gold); }
-.setup-note { font-size:11px; color:#806040; font-family:sans-serif; margin-top:6px; line-height:1.4; }
-.setup-btn { width:100%; max-width:360px; padding:16px; background:linear-gradient(135deg,var(--gold),#a06820); color:#1a0a00; border:none; border-radius:14px; font-size:16px; font-weight:bold; font-family:Georgia,serif; cursor:pointer; }
-.setup-btn:disabled { opacity:0.35; cursor:not-allowed; }
+/* ══ SETUP ══ */
+#setup {
+  position:fixed; inset:0; z-index:9999;
+  background:linear-gradient(160deg,#1a0a00,#3d1c00);
+  display:flex; flex-direction:column; align-items:center;
+  padding:40px 24px 30px; overflow-y:auto;
+}
+#setup.off { display:none; }
+.su-logo  { font-size:60px; margin-bottom:10px; }
+.su-title { color:var(--gold); font-size:24px; font-weight:bold; text-align:center; }
+.su-sub   { color:#a07040; font-size:11px; font-family:sans-serif; letter-spacing:1px; margin-bottom:28px; text-align:center; }
+.su-box   { background:rgba(255,255,255,0.05); border:1px solid rgba(200,147,58,0.3); border-radius:18px; padding:22px; width:100%; max-width:360px; margin-bottom:14px; }
+.su-box h3 { color:var(--gold); font-size:14px; font-family:sans-serif; margin-bottom:16px; }
+.sf { margin-bottom:14px; }
+.sf label { display:block; color:#a07040; font-size:10px; font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:1px; margin-bottom:5px; }
+.sf input { width:100%; padding:12px 14px; border-radius:10px; border:1.5px solid rgba(200,147,58,0.3); background:rgba(0,0,0,0.35); color:#fff; font-size:16px; font-family:monospace; letter-spacing:1px; outline:none; }
+.sf input::placeholder { color:#604030; font-family:sans-serif; font-size:13px; letter-spacing:0; }
+.sf input:focus { border-color:var(--gold); }
+.sf-note { font-size:11px; color:#806040; font-family:sans-serif; margin-top:5px; line-height:1.4; }
+#su-btn { width:100%; max-width:360px; padding:15px; background:linear-gradient(135deg,var(--gold),#a06820); color:#1a0a00; border:none; border-radius:14px; font-size:16px; font-weight:bold; font-family:Georgia,serif; cursor:pointer; }
+#su-btn:disabled { opacity:0.3; cursor:not-allowed; }
 
-/* HEADER */
-#header { background:linear-gradient(135deg,var(--brown),var(--mid)); padding:52px 18px 14px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
-.h-left { display:flex; align-items:center; gap:10px; }
-.h-icon { font-size:26px; }
-.h-name { color:var(--gold); font-size:16px; font-weight:bold; }
-.h-sub  { color:#a07040; font-size:10px; font-family:sans-serif; margin-top:1px; }
-.h-right { display:flex; align-items:center; gap:10px; }
-#alert-pill { background:var(--red); color:#fff; border-radius:20px; padding:4px 10px; font-size:11px; font-weight:bold; font-family:sans-serif; display:none; align-items:center; gap:4px; }
-#settings-btn { background:rgba(255,255,255,0.12); border:none; color:var(--gold); width:32px; height:32px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+/* ══ HEADER ══ */
+#hdr { background:linear-gradient(135deg,var(--brown),var(--mid)); padding:50px 16px 12px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+.hd-l { display:flex; align-items:center; gap:10px; }
+.hd-ico { font-size:24px; }
+.hd-name { color:var(--gold); font-size:16px; font-weight:bold; }
+.hd-sub  { color:#a07040; font-size:10px; font-family:sans-serif; }
+.hd-r { display:flex; align-items:center; gap:8px; }
+#al-pill { background:var(--red); color:#fff; border-radius:20px; padding:3px 9px; font-size:11px; font-weight:bold; font-family:sans-serif; display:none; align-items:center; gap:3px; }
+#cfg-btn { background:rgba(255,255,255,0.12); border:none; color:var(--gold); width:30px; height:30px; border-radius:50%; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
 
-/* ALERT STRIP */
-#alert-strip { background:#fff3cd; border-bottom:2px solid #f0c040; padding:8px 16px; display:none; gap:4px; flex-direction:column; }
-.a-item { font-size:12px; color:#7a4f00; font-family:sans-serif; }
+/* ══ ALERT STRIP ══ */
+#al-strip { background:#fff3cd; border-bottom:2px solid #f0c040; padding:7px 14px; display:none; flex-direction:column; gap:3px; flex-shrink:0; }
+.al-i { font-size:12px; color:#7a4f00; font-family:sans-serif; }
 
-/* CONTENT */
-#content { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(82px + var(--safe-b)); }
-.page { display:none; padding:18px 16px; }
-.page.active { display:block; }
-.sec-title { font-size:18px; color:var(--brown); font-weight:bold; border-bottom:2px solid var(--gold-l); padding-bottom:10px; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-.pill-count { background:var(--brown); color:var(--gold); border-radius:20px; padding:1px 9px; font-size:12px; }
+/* ══ SCROLL ══ */
+#scroll { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:calc(78px + var(--safe-b)); }
 
-/* CARTE */
-.lib-card { background:linear-gradient(145deg,var(--brown) 0%,var(--mid) 70%,#3a2000 100%); border-radius:22px; padding:20px; margin-bottom:16px; box-shadow:0 10px 36px rgba(44,26,0,0.35); }
-.lc-head { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-.lc-logo { font-size:28px; }
-.lc-org  { color:var(--gold); font-size:14px; font-weight:bold; }
-.lc-sub  { color:#a07040; font-size:10px; font-family:sans-serif; margin-top:2px; }
-.lc-sep  { height:1px; background:rgba(200,147,58,0.25); margin-bottom:16px; }
-.barcode-box { background:#fff; border-radius:10px; padding:12px 14px 8px; margin-bottom:14px; }
-canvas#bc { display:block; width:100%; height:55px; }
-.bc-num { text-align:center; font-family:monospace; font-size:12px; color:#555; margin-top:6px; letter-spacing:2px; }
+/* ══ PAGES ══ */
+.pg { display:none; padding:16px; }
+.pg.on { display:block; }
+.pg-title { font-size:18px; color:var(--brown); font-weight:bold; border-bottom:2px solid var(--gold-l); padding-bottom:9px; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.pg-badge { background:var(--brown); color:var(--gold); border-radius:20px; padding:1px 9px; font-size:12px; }
+
+/* ══ CARTE ══ */
+.lib-card { background:linear-gradient(145deg,var(--brown),var(--mid) 65%,#3a2000); border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:0 8px 30px rgba(44,26,0,0.4); }
+.lch { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.lch-ico { font-size:26px; }
+.lch-org { color:var(--gold); font-size:13px; font-weight:bold; }
+.lch-sub { color:#a07040; font-size:10px; font-family:sans-serif; margin-top:1px; }
+.lc-sep  { height:1px; background:rgba(200,147,58,0.2); margin-bottom:14px; }
+.bc-box  { background:#fff; border-radius:8px; padding:10px 12px 7px; margin-bottom:12px; }
+canvas#bc { display:block; width:100%; height:52px; }
+.bc-code { text-align:center; font-family:monospace; font-size:12px; color:#444; margin-top:5px; letter-spacing:2px; }
+.lc-holder { color:rgba(200,147,58,0.55); font-size:11px; font-family:sans-serif; text-align:right; margin-bottom:8px; }
 .lc-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.lc-label { color:#a07040; font-size:10px; font-family:sans-serif; letter-spacing:0.5px; }
-.lc-num-box { display:flex; align-items:center; gap:8px; background:rgba(0,0,0,0.3); border-radius:8px; padding:6px 12px; }
-.lc-num-val { color:var(--gold); font-size:15px; font-family:monospace; letter-spacing:2px; }
-.eye-btn { background:none; border:none; font-size:16px; cursor:pointer; padding:0; }
-.lc-foot { display:flex; justify-content:space-between; border-top:1px solid rgba(200,147,58,0.2); padding-top:10px; }
+.lc-lbl { color:#a07040; font-size:10px; font-family:sans-serif; }
+.lc-num-box { display:flex; align-items:center; gap:7px; background:rgba(0,0,0,0.28); border-radius:8px; padding:5px 11px; }
+.lc-num { color:var(--gold); font-size:14px; font-family:monospace; letter-spacing:2px; }
+.eye { background:none; border:none; font-size:15px; cursor:pointer; padding:0; }
+.lc-foot { display:flex; justify-content:space-between; border-top:1px solid rgba(200,147,58,0.2); padding-top:9px; }
 .lc-foot span { color:#a07040; font-size:10px; font-family:sans-serif; }
-.lc-holder { color:rgba(200,147,58,0.6); font-size:11px; font-family:sans-serif; text-align:right; margin-bottom:8px; }
-.scan-hint { text-align:center; color:var(--muted); font-size:11px; margin-bottom:20px; font-family:sans-serif; }
+.scan-hint { text-align:center; color:var(--muted); font-size:11px; margin-bottom:16px; font-family:sans-serif; }
+
+/* Stats cliquables */
 .stats-row { display:flex; gap:10px; }
-.stat { flex:1; background:var(--card-bg); border-radius:14px; padding:12px 8px; text-align:center; border:1px solid var(--gold-l); }
+.stat { flex:1; background:var(--white); border-radius:14px; padding:12px 6px 10px; text-align:center; border:1px solid var(--gold-l); cursor:pointer; transition:transform 0.12s; }
+.stat:active { transform:scale(0.95); }
 .stat-n { font-size:26px; font-weight:bold; color:var(--brown); }
 .stat-l { font-size:10px; color:var(--muted); font-family:sans-serif; margin-top:2px; }
+.stat-a { font-size:9px; color:#c8a870; font-family:sans-serif; margin-top:3px; }
 
-/* EMPRUNTS */
-.loans-section { margin-bottom:20px; }
-.loans-section-title { font-size:11px; font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:1px; padding:6px 10px; border-radius:8px; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
-.ls-overdue { background:#ffeaea; color:var(--red); }
-.ls-urgent  { background:#fff4e0; color:#b35c00; }
-.ls-ok      { background:#eafaf3; color:#006d4c; }
-.book-card { background:var(--card-bg); border-radius:14px; padding:13px; margin-bottom:10px; display:flex; gap:10px; border:1px solid var(--gold-l); box-shadow:0 2px 6px rgba(44,26,0,0.06); position:relative; flex-wrap:wrap; }
-.book-card.ov  { border-color:#fba5a5; background:#fff8f8; }
-.book-card.urg { border-color:#ffd080; }
-.bc-emoji { font-size:30px; flex-shrink:0; align-self:flex-start; margin-top:2px; }
-.bc-info  { flex:1; min-width:0; }
-.bc-title  { font-size:14px; font-weight:bold; color:var(--brown); margin-bottom:2px; }
-.bc-author { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:5px; }
-.bc-isbn   { font-size:10px; color:#bbb; font-family:monospace; margin-bottom:5px; }
-.bc-borrow { font-size:11px; color:#aaa; font-family:sans-serif; margin-bottom:6px; }
-.bc-due-row { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
-.bc-due-lbl { font-size:11px; color:#666; font-family:sans-serif; }
+/* ══ EMPRUNTS ══ */
+.filter-bar { display:flex; gap:7px; margin-bottom:14px; flex-wrap:wrap; }
+.fb { padding:5px 11px; border-radius:20px; border:1.5px solid var(--gold-l); background:var(--white); font-size:11px; font-family:sans-serif; color:var(--muted); cursor:pointer; }
+.fb.on { background:var(--brown); color:var(--gold); border-color:var(--brown); font-weight:bold; }
+
+.loan-grp { margin-bottom:18px; }
+.grp-hd { font-size:11px; font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:1px; padding:5px 10px; border-radius:8px; margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+.g-ov  { background:#ffeaea; color:var(--red); }
+.g-urg { background:#fff4e0; color:#b35c00; }
+.g-ok  { background:#eafaf3; color:#006d4c; }
+
+.book { background:var(--white); border-radius:14px; padding:12px; margin-bottom:9px; display:flex; gap:10px; border:1px solid var(--gold-l); box-shadow:0 2px 5px rgba(44,26,0,0.05); position:relative; flex-wrap:wrap; }
+.book.ov  { border-color:#fba5a5; background:#fff8f8; }
+.book.urg { border-color:#ffd080; }
+.b-emo { font-size:28px; flex-shrink:0; align-self:flex-start; margin-top:2px; }
+.b-inf { flex:1; min-width:0; }
+.b-tit  { font-size:14px; font-weight:bold; color:var(--brown); margin-bottom:2px; line-height:1.3; }
+.b-aut  { font-size:12px; color:var(--muted); font-style:italic; margin-bottom:4px; }
+.b-isbn { font-size:10px; color:#bbb; font-family:monospace; margin-bottom:4px; }
+.b-bor  { font-size:11px; color:#aaa; font-family:sans-serif; margin-bottom:5px; }
+.b-due  { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+.b-due-l { font-size:11px; color:#666; font-family:sans-serif; }
 .badge { border-radius:20px; padding:2px 8px; font-size:10px; font-family:sans-serif; font-weight:bold; color:#fff; }
-.b-ok  { background:var(--green); }
-.b-urg { background:var(--orange); }
-.b-tod { background:#e17055; }
-.b-ov  { background:var(--red); }
-.more-btn { background:none; border:none; cursor:pointer; color:#ccc; font-size:18px; padding:0 2px; align-self:flex-start; }
-.del-menu { width:100%; display:flex; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f0e0c0; }
-.del-ok { flex:1; background:var(--red); color:#fff; border:none; border-radius:8px; padding:9px; font-size:12px; cursor:pointer; font-family:sans-serif; }
-.del-no { flex:1; background:#f0e0c0; color:var(--brown); border:none; border-radius:8px; padding:9px; font-size:12px; cursor:pointer; font-family:sans-serif; }
-.empty { text-align:center; padding:40px 20px; }
-.empty-i { font-size:48px; margin-bottom:10px; }
-.empty-t { font-size:16px; color:var(--brown); font-weight:bold; margin-bottom:6px; }
-.empty-s { font-size:12px; color:var(--muted); font-family:sans-serif; }
+.bov  { background:var(--red); }
+.burg { background:var(--orange); }
+.btod { background:#e17055; }
+.bok  { background:var(--green); }
+.more { background:none; border:none; cursor:pointer; color:#ccc; font-size:18px; padding:0 2px; align-self:flex-start; flex-shrink:0; }
+.del-m { width:100%; display:flex; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid #f0e0c0; }
+.del-y { flex:1; background:var(--red); color:#fff; border:none; border-radius:8px; padding:9px; font-size:12px; cursor:pointer; font-family:sans-serif; }
+.del-n { flex:1; background:#f0e0c0; color:var(--brown); border:none; border-radius:8px; padding:9px; font-size:12px; cursor:pointer; font-family:sans-serif; }
+.empty { text-align:center; padding:36px 20px; }
+.em-i { font-size:46px; margin-bottom:10px; }
+.em-t { font-size:15px; color:var(--brown); font-weight:bold; margin-bottom:5px; }
+.em-s { font-size:12px; color:var(--muted); font-family:sans-serif; }
 
-/* FORM */
-.form-wrap { background:var(--card-bg); border-radius:18px; padding:18px; border:1px solid var(--gold-l); margin-bottom:14px; }
-.fg { margin-bottom:14px; }
+/* ══ FORM ══ */
+.form-box { background:var(--white); border-radius:16px; padding:16px; border:1px solid var(--gold-l); margin-bottom:12px; }
+.fg { margin-bottom:13px; }
 .frow { display:flex; gap:10px; }
-.frow .fg { flex:1; }
-.fg label { display:block; font-size:10px; color:var(--muted); font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
-.fg input { width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid #e0c8a0; background:var(--bg); font-size:14px; color:var(--brown); font-family:Georgia,serif; outline:none; appearance:none; -webkit-appearance:none; }
+.frow .fg { flex:1; margin-bottom:0; }
+.fg label { display:block; font-size:10px; color:var(--muted); font-family:sans-serif; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.fg input { width:100%; padding:10px 11px; border-radius:10px; border:1.5px solid #e0c8a0; background:var(--bg); font-size:14px; color:var(--brown); font-family:Georgia,serif; outline:none; -webkit-appearance:none; appearance:none; }
 .fg input:focus { border-color:var(--gold); }
-.add-btn { width:100%; padding:14px; background:linear-gradient(135deg,var(--brown),var(--mid)); color:var(--gold); border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer; font-family:Georgia,serif; margin-top:4px; }
-.add-btn:disabled { opacity:0.35; cursor:not-allowed; }
-.success { background:#d4edda; border:1px solid #c3e6cb; border-radius:10px; padding:12px; color:#155724; text-align:center; margin-bottom:14px; font-family:sans-serif; font-size:13px; display:none; }
-.tip { background:#fff8e8; border:1px solid #f0c860; border-radius:12px; padding:14px; }
-.tip-t { font-size:12px; font-weight:bold; color:#7a4f00; margin-bottom:5px; }
+#add-btn { width:100%; padding:13px; background:linear-gradient(135deg,var(--brown),var(--mid)); color:var(--gold); border:none; border-radius:12px; font-size:15px; font-weight:bold; cursor:pointer; font-family:Georgia,serif; margin-top:6px; }
+#add-btn:disabled { opacity:0.3; cursor:not-allowed; }
+#ok-msg { background:#d4edda; border:1px solid #c3e6cb; border-radius:10px; padding:11px; color:#155724; text-align:center; margin-bottom:12px; font-family:sans-serif; font-size:13px; display:none; }
+.tip { background:#fff8e8; border:1px solid #f0c860; border-radius:12px; padding:13px; }
+.tip-t { font-size:12px; font-weight:bold; color:#7a4f00; margin-bottom:4px; }
 .tip-b { font-size:11px; color:#7a4f00; font-family:sans-serif; line-height:1.5; }
 
-/* TABBAR */
-#tabbar { position:fixed; bottom:0; left:0; right:0; max-width:430px; margin:0 auto; height:82px; background:rgba(250,246,240,0.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--gold-l); display:flex; padding-bottom:var(--safe-b); z-index:200; }
-.tb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; background:none; border:none; cursor:pointer; position:relative; padding-bottom:4px; }
-.tb-i { font-size:21px; transition:transform 0.15s; }
-.tb.active .tb-i { transform:scale(1.18); }
+/* ══ TABBAR ══ */
+#tabs { position:fixed; bottom:0; left:0; right:0; max-width:430px; margin:0 auto; height:78px; background:rgba(250,246,240,0.97); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid var(--gold-l); display:flex; padding-bottom:var(--safe-b); z-index:500; }
+.tb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; background:none; border:none; cursor:pointer; position:relative; padding-bottom:4px; }
+.tb-i { font-size:20px; transition:transform 0.12s; }
+.tb.on .tb-i { transform:scale(1.15); }
 .tb-l { font-size:10px; font-family:sans-serif; color:var(--muted); }
-.tb.active .tb-l { color:var(--brown); font-weight:bold; }
-.tb-badge { position:absolute; top:3px; right:calc(50% - 18px); background:var(--red); color:#fff; border-radius:10px; min-width:16px; height:16px; font-size:9px; display:none; align-items:center; justify-content:center; font-family:monospace; }
+.tb.on .tb-l { color:var(--brown); font-weight:bold; }
+.tb-bdg { position:absolute; top:2px; right:calc(50% - 20px); background:var(--red); color:#fff; border-radius:10px; min-width:15px; height:15px; font-size:9px; display:none; align-items:center; justify-content:center; font-family:monospace; padding:0 3px; }
 </style>
 </head>
 <body>
 
-<div id="setup-screen">
-  <div class="setup-logo">📚</div>
-  <div class="setup-title">Ma Bibliothèque</div>
-  <div class="setup-sub">LAUSANNE · RÉSEAU RENOUVAUD</div>
-  <div class="setup-card">
+<!-- SETUP -->
+<div id="setup">
+  <div class="su-logo">📚</div>
+  <div class="su-title">Ma Bibliothèque</div>
+  <div class="su-sub">LAUSANNE · RENOUVAUD</div>
+  <div class="su-box">
     <h3>🪪 Enregistre ta carte de membre</h3>
-    <div class="setup-field">
-      <label>Ton prénom et nom</label>
+    <div class="sf">
+      <label>Prénom et Nom</label>
       <input type="text" id="s-name" placeholder="ex: Marcel Mellier" autocomplete="name">
     </div>
-    <div class="setup-field">
+    <div class="sf">
       <label>Numéro de carte</label>
-      <input type="text" id="s-card" placeholder="ex: P12345678" autocomplete="off" oninput="onCardInput()">
-      <div class="setup-note">Indiqué sur ta carte physique ou dans ton compte renouvaud.ch</div>
+      <input type="text" id="s-card" placeholder="ex: BVL-23456789" autocomplete="off" oninput="chkSu()">
+      <div class="sf-note">Le numéro imprimé sur ta carte ou sur renouvaud.ch</div>
     </div>
-    <div class="setup-field">
-      <label>Code-barres (lettres et chiffres)</label>
-      <input type="text" id="s-barcode" placeholder="ex: BVL12345678" autocomplete="off"
-             style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase();onCardInput()">
-      <div class="setup-note">Tel qu'il est imprimé sous le code-barres sur ta carte (ex: BVL…). Si identique au numéro, laisse vide.</div>
+    <div class="sf">
+      <label>Code-barres (lettres + chiffres)</label>
+      <input type="text" id="s-bc" placeholder="ex: BVL23456789" autocomplete="off"
+             oninput="this.value=this.value.toUpperCase();chkSu()">
+      <div class="sf-note">Le code sous le code-barres (peut contenir BVL…). Si identique au numéro, laisse vide.</div>
     </div>
-    <div class="setup-field">
-      <label>Validité (année)</label>
-      <input type="text" id="s-valid" placeholder="ex: 2027" inputmode="numeric" maxlength="4">
+    <div class="sf">
+      <label>Année de validité</label>
+      <input type="text" id="s-val" placeholder="ex: 2027" inputmode="numeric" maxlength="4">
     </div>
   </div>
-  <button class="setup-btn" id="setup-btn" onclick="saveSetup()" disabled>Enregistrer ma carte →</button>
+  <button id="su-btn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
 
-<div id="header">
-  <div class="h-left">
-    <span class="h-icon">📚</span>
+<!-- HEADER -->
+<div id="hdr">
+  <div class="hd-l">
+    <span class="hd-ico">📚</span>
     <div>
-      <div class="h-name">Ma Bibliothèque</div>
-      <div class="h-sub">Bibliothèque de Lausanne</div>
+      <div class="hd-name">Ma Bibliothèque</div>
+      <div class="hd-sub">Bibliothèque de Lausanne</div>
     </div>
   </div>
-  <div class="h-right">
-    <div id="alert-pill">⚠️ <span id="alert-count">0</span></div>
-    <button id="settings-btn" onclick="openSettings()">⚙️</button>
+  <div class="hd-r">
+    <div id="al-pill">⚠️ <span id="al-n">0</span></div>
+    <button id="cfg-btn" onclick="openSetup()">⚙️</button>
   </div>
 </div>
 
-<div id="alert-strip">
-  <div id="as-overdue" class="a-item"></div>
-  <div id="as-urgent"  class="a-item"></div>
+<!-- ALERT STRIP -->
+<div id="al-strip">
+  <div id="al-ov" class="al-i"></div>
+  <div id="al-ug" class="al-i"></div>
 </div>
 
-<div id="content">
+<!-- CONTENU -->
+<div id="scroll">
 
-  <div class="page active" id="page-carte">
-    <div class="sec-title">Ma Carte de Membre</div>
+  <!-- CARTE -->
+  <div class="pg on" id="pg-carte">
+    <div class="pg-title">Ma Carte de Membre</div>
     <div class="lib-card">
-      <div class="lc-head">
-        <span class="lc-logo">📚</span>
+      <div class="lch">
+        <span class="lch-ico">📚</span>
         <div>
-          <div class="lc-org">Bibliothèque de Lausanne</div>
-          <div class="lc-sub">Réseau des bibliothèques vaudoises · RENOUVAUD</div>
+          <div class="lch-org">Bibliothèque de Lausanne</div>
+          <div class="lch-sub">Réseau des bibliothèques vaudoises · RENOUVAUD</div>
         </div>
       </div>
       <div class="lc-sep"></div>
-      <div class="barcode-box">
+      <div class="bc-box">
         <canvas id="bc" width="600" height="80"></canvas>
-        <div class="bc-num" id="bc-num-display"></div>
+        <div class="bc-code" id="bc-lbl"></div>
       </div>
       <div class="lc-holder" id="lc-holder"></div>
       <div class="lc-row">
-        <span class="lc-label">N° DE CARTE</span>
+        <span class="lc-lbl">N° DE CARTE</span>
         <div class="lc-num-box">
-          <span class="lc-num-val" id="lc-num">—</span>
-          <button class="eye-btn" id="eye-btn" onclick="toggleNum()">👁</button>
+          <span class="lc-num" id="lc-num">—</span>
+          <button class="eye" id="eye" onclick="toggleNum()">👁</button>
         </div>
       </div>
       <div class="lc-foot">
-        <span>✓ Valide <span id="lc-valid">—</span></span>
+        <span>✓ Valide <span id="lc-val">—</span></span>
         <span>Canton de Vaud</span>
       </div>
     </div>
-    <div class="scan-hint">📡 Présente le code-barres au scanner à la bibliothèque</div>
+    <div class="scan-hint">📡 Présente le code-barres au scanner de la bibliothèque</div>
+
+    <!-- Stats → navigation directe au clic -->
     <div class="stats-row">
-      <div class="stat"><div class="stat-n" id="st-total">0</div><div class="stat-l">Emprunts</div></div>
-      <div class="stat"><div class="stat-n" id="st-overdue" style="color:var(--green)">0</div><div class="stat-l">En retard</div></div>
-      <div class="stat"><div class="stat-n" id="st-urgent" style="color:var(--brown)">0</div><div class="stat-l">Urgents</div></div>
+      <div class="stat" onclick="goFilter('tous')">
+        <div class="stat-n" id="st-tot">0</div>
+        <div class="stat-l">Emprunts</div>
+        <div class="stat-a">voir tous →</div>
+      </div>
+      <div class="stat" onclick="goFilter('retard')">
+        <div class="stat-n" id="st-ov">0</div>
+        <div class="stat-l">En retard</div>
+        <div class="stat-a">voir →</div>
+      </div>
+      <div class="stat" onclick="goFilter('urgent')">
+        <div class="stat-n" id="st-ug">0</div>
+        <div class="stat-l">Urgents</div>
+        <div class="stat-a">voir →</div>
+      </div>
     </div>
   </div>
 
-  <div class="page" id="page-emprunts">
-    <div class="sec-title">Mes Emprunts <span class="pill-count" id="loans-count">0</span></div>
+  <!-- EMPRUNTS -->
+  <div class="pg" id="pg-emprunts">
+    <div class="pg-title">
+      Mes Emprunts
+      <span class="pg-badge" id="loans-n">0</span>
+    </div>
+    <div class="filter-bar">
+      <button class="fb on" id="fb-tous"   onclick="setFilter('tous')">Tous</button>
+      <button class="fb"    id="fb-retard" onclick="setFilter('retard')">🔴 En retard</button>
+      <button class="fb"    id="fb-urgent" onclick="setFilter('urgent')">🟡 Urgents</button>
+      <button class="fb"    id="fb-ok"     onclick="setFilter('ok')">🟢 En cours</button>
+    </div>
     <div id="loans-list"></div>
   </div>
 
-  <div class="page" id="page-ajouter">
-    <div class="sec-title">Nouvel Emprunt</div>
-    <div class="success" id="success-msg">✓ Livre ajouté !</div>
-    <div class="form-wrap">
-      <div class="fg"><label>Titre *</label><input type="text" id="f-title" placeholder="Titre du livre" oninput="checkForm()"></div>
-      <div class="fg"><label>Auteur</label><input type="text" id="f-author" placeholder="Prénom Nom"></div>
+  <!-- AJOUTER -->
+  <div class="pg" id="pg-ajouter">
+    <div class="pg-title">Nouvel Emprunt</div>
+    <div id="ok-msg">✓ Livre ajouté !</div>
+    <div class="form-box">
+      <div class="fg"><label>Titre *</label><input type="text" id="f-tit" placeholder="Titre du livre" oninput="chkForm()"></div>
+      <div class="fg"><label>Auteur</label><input type="text" id="f-aut" placeholder="Prénom Nom"></div>
       <div class="fg"><label>ISBN (optionnel)</label><input type="text" id="f-isbn" placeholder="9782…" inputmode="numeric"></div>
       <div class="frow">
-        <div class="fg"><label>Emprunté le *</label><input type="date" id="f-borrow" oninput="checkForm()"></div>
-        <div class="fg"><label>À rendre le *</label><input type="date" id="f-due" oninput="checkForm()"></div>
+        <div class="fg"><label>Emprunté le *</label><input type="date" id="f-bor" oninput="chkForm()"></div>
+        <div class="fg"><label>À rendre le *</label><input type="date" id="f-due" oninput="chkForm()"></div>
       </div>
-      <button class="add-btn" id="add-btn" onclick="addBook()" disabled>+ Ajouter ce livre</button>
+      <button id="add-btn" onclick="addBook()" disabled>+ Ajouter ce livre</button>
     </div>
     <div class="tip">
       <div class="tip-t">💡 Renouvellement</div>
-      <div class="tip-b">Tu peux renouveler tes emprunts sur <strong>renouvaud.ch</strong> ou à la bibliothèque. La durée standard est de 28 jours. Des frais s'appliquent en cas de retard !</div>
+      <div class="tip-b">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours. Des frais s'appliquent en cas de retard !</div>
     </div>
   </div>
 
-</div>
+</div><!-- /scroll -->
 
-<div id="tabbar">
-  <button class="tb active" id="tab-carte" onclick="goTab('carte')">
-    <span class="tb-i">🪪</span><span class="tb-l">Carte</span>
-  </button>
-  <button class="tb" id="tab-emprunts" onclick="goTab('emprunts')">
-    <span class="tb-i">📚</span><span class="tb-l">Emprunts</span>
-    <span class="tb-badge" id="loans-badge"></span>
-  </button>
-  <button class="tb" id="tab-ajouter" onclick="goTab('ajouter')">
-    <span class="tb-i">➕</span><span class="tb-l">Ajouter</span>
-  </button>
+<!-- TABBAR -->
+<div id="tabs">
+  <button class="tb on" id="tb-carte"    onclick="goTab('carte')"><span class="tb-i">🪪</span><span class="tb-l">Carte</span></button>
+  <button class="tb"    id="tb-emprunts" onclick="goTab('emprunts')"><span class="tb-i">📚</span><span class="tb-l">Emprunts</span><span class="tb-bdg" id="tb-bdg"></span></button>
+  <button class="tb"    id="tb-ajouter"  onclick="goTab('ajouter')"><span class="tb-i">➕</span><span class="tb-l">Ajouter</span></button>
 </div>
 
 <script>
-const KEY_CARD='bib_card_v2', KEY_BOOKS='bib_books_v2';
-let card=JSON.parse(localStorage.getItem(KEY_CARD)||'null');
-let books=JSON.parse(localStorage.getItem(KEY_BOOKS)||'null')||[];
-let numVisible=false, openMenu=null;
-const save=()=>{ localStorage.setItem(KEY_CARD,JSON.stringify(card)); localStorage.setItem(KEY_BOOKS,JSON.stringify(books)); };
+const KC='bib_card_v3', KB='bib_books_v3';
+let card=JSON.parse(localStorage.getItem(KC)||'null');
+let books=JSON.parse(localStorage.getItem(KB)||'null')||[];
+let numVis=false, openMenu=null, curF='tous';
+const save=()=>{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));};
 
-function onCardInput(){
-  document.getElementById('setup-btn').disabled = document.getElementById('s-card').value.trim().length < 3;
-}
-function saveSetup(){
+/* SETUP */
+function chkSu(){document.getElementById('su-btn').disabled=document.getElementById('s-card').value.trim().length<3;}
+function doSetup(){
   const name=document.getElementById('s-name').value.trim();
-  const cardNum=document.getElementById('s-card').value.trim();
-  const barcode=document.getElementById('s-barcode').value.trim().toUpperCase()||cardNum.toUpperCase();
-  const valid=document.getElementById('s-valid').value.trim()||'2027';
-  card={name,cardNum,barcode,valid};
-  save();
-  document.getElementById('setup-screen').classList.add('hidden');
+  const num=document.getElementById('s-card').value.trim();
+  const bcRaw=document.getElementById('s-bc').value.trim().toUpperCase();
+  const bc=bcRaw||num.toUpperCase();
+  const val=document.getElementById('s-val').value.trim()||'2027';
+  card={name,num,bc,val}; save();
+  document.getElementById('setup').classList.add('off');
   initApp();
 }
-function openSettings(){
-  document.getElementById('setup-screen').classList.remove('hidden');
+function openSetup(){
+  document.getElementById('setup').classList.remove('off');
   if(card){
     document.getElementById('s-name').value=card.name||'';
-    document.getElementById('s-card').value=card.cardNum||'';
-    document.getElementById('s-barcode').value=card.barcode||'';
-    document.getElementById('s-valid').value=card.valid||'';
-    document.getElementById('setup-btn').disabled=false;
+    document.getElementById('s-card').value=card.num||'';
+    document.getElementById('s-bc').value=card.bc||'';
+    document.getElementById('s-val').value=card.val||'';
+    document.getElementById('su-btn').disabled=false;
   }
 }
-function drawBarcode(code){
-  const canvas=document.getElementById('bc'); if(!canvas)return;
-  const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+
+/* BARCODE — accepte lettres + chiffres */
+function drawBC(code){
+  const cv=document.getElementById('bc'); if(!cv)return;
+  const ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
   ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
   const s=String(code).toUpperCase();
-  let seed=7;
+  let seed=17;
   for(let i=0;i<s.length;i++) seed=((seed<<5)-seed+s.charCodeAt(i))&0x7fffffff;
-  const lcg=()=>{ seed=(seed*1664525+1013904223)&0x7fffffff; return seed/0x7fffffff; };
-  const bars=95, bw=W/bars;
+  const rnd=()=>{seed=(seed*1664525+1013904223)&0x7fffffff;return seed/0x7fffffff;};
   ctx.fillStyle='#111';
+  const bars=100, bw=W/bars;
   for(let i=0;i<bars;i++){
-    const guard=i<2||i>bars-3||i===Math.floor(bars/2);
-    const h=guard?H:H*(0.42+lcg()*0.5);
-    const on=guard?true:lcg()>0.43;
-    if(on){ const w2=bw*(lcg()>0.55?1.9:1); ctx.fillRect(Math.floor(i*bw),0,Math.ceil(w2),Math.ceil(h)); }
+    const guard=i<3||i>bars-4||Math.abs(i-bars/2)<2;
+    const h=guard?H:H*(0.40+rnd()*0.52);
+    const on=guard?true:rnd()>0.43;
+    if(on){const w2=bw*(rnd()>0.58?2.0:1.0);ctx.fillRect(Math.floor(i*bw),0,Math.ceil(w2),Math.ceil(h));}
   }
 }
+
+/* CARTE */
 function renderCard(){
   if(!card)return;
-  drawBarcode(card.barcode||card.cardNum);
-  document.getElementById('bc-num-display').textContent=card.barcode||card.cardNum;
+  drawBC(card.bc);
+  document.getElementById('bc-lbl').textContent=card.bc;
   document.getElementById('lc-holder').textContent=card.name||'';
-  document.getElementById('lc-valid').textContent=card.valid||'—';
-  document.getElementById('lc-num').textContent=numVisible?card.cardNum:maskNum(card.cardNum);
+  document.getElementById('lc-val').textContent=card.val||'—';
+  document.getElementById('lc-num').textContent=numVis?card.num:maskNum(card.num);
 }
-function maskNum(n){ if(!n)return'—'; return n.slice(0,2)+'•'.repeat(Math.max(0,n.length-3))+n.slice(-1); }
-function toggleNum(){ numVisible=!numVisible; document.getElementById('lc-num').textContent=numVisible?card.cardNum:maskNum(card.cardNum); document.getElementById('eye-btn').textContent=numVisible?'🙈':'👁'; }
-function daysLeft(due){ const t=new Date(); t.setHours(0,0,0,0); return Math.round((new Date(due)-t)/86400000); }
-function fmtDate(d){ return new Date(d).toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'}); }
-function makeBadge(d){
-  if(d<0) return`<span class="badge b-ov">En retard de ${Math.abs(d)}j</span>`;
-  if(d===0) return`<span class="badge b-tod">Aujourd'hui !</span>`;
-  if(d<=3) return`<span class="badge b-urg">${d}j restants</span>`;
-  return`<span class="badge b-ok">${d}j restants</span>`;
+function maskNum(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
+function toggleNum(){numVis=!numVis;document.getElementById('lc-num').textContent=numVis?card.num:maskNum(card.num);document.getElementById('eye').textContent=numVis?'🙈':'👁';}
+
+/* UTILS */
+function dLeft(due){const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
+function fmt(d){return new Date(d).toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});}
+function mkBadge(d){
+  if(d<0)   return`<span class="badge bov">En retard ${Math.abs(d)}j</span>`;
+  if(d===0) return`<span class="badge btod">Aujourd'hui !</span>`;
+  if(d<=3)  return`<span class="badge burg">${d}j restants</span>`;
+  return`<span class="badge bok">${d}j restants</span>`;
 }
-const covers=['📕','📗','📘','📙','📒','📓','📔'];
+const CVR=['📕','📗','📘','📙','📒','📓','📔'];
+
+/* ALERTES + STATS */
 function updateAlerts(){
-  const ov=books.filter(b=>daysLeft(b.due)<0);
-  const ug=books.filter(b=>{ const d=daysLeft(b.due); return d>=0&&d<=3; });
-  const total=ov.length+ug.length;
-  const pill=document.getElementById('alert-pill');
-  const strip=document.getElementById('alert-strip');
-  pill.style.display=total?'flex':'none';
-  document.getElementById('alert-count').textContent=total;
-  strip.style.display=total?'flex':'none';
-  const aso=document.getElementById('as-overdue'), asu=document.getElementById('as-urgent');
-  aso.style.display=ov.length?'block':'none';
-  asu.style.display=ug.length?'block':'none';
-  if(ov.length) aso.textContent=`⚠️ ${ov.length} livre${ov.length>1?'s':''} EN RETARD — des frais s'appliquent !`;
-  if(ug.length) asu.textContent=`🕐 ${ug.length} livre${ug.length>1?'s':''} à rendre très prochainement`;
-  const badge=document.getElementById('loans-badge');
-  badge.textContent=total||''; badge.style.display=total?'flex':'none';
-  document.getElementById('st-total').textContent=books.length;
-  document.getElementById('st-overdue').textContent=ov.length;
-  document.getElementById('st-overdue').style.color=ov.length?'var(--red)':'var(--green)';
-  document.getElementById('st-urgent').textContent=ug.length;
-  document.getElementById('st-urgent').style.color=ug.length?'var(--orange)':'var(--brown)';
+  const ov=books.filter(b=>dLeft(b.due)<0);
+  const ug=books.filter(b=>{const d=dLeft(b.due);return d>=0&&d<=3;});
+  const tot=ov.length+ug.length;
+  const pill=document.getElementById('al-pill');
+  pill.style.display=tot?'flex':'none';
+  document.getElementById('al-n').textContent=tot;
+  const strip=document.getElementById('al-strip');
+  strip.style.display=tot?'flex':'none';
+  const ao=document.getElementById('al-ov'),au=document.getElementById('al-ug');
+  ao.style.display=ov.length?'block':'none';
+  au.style.display=ug.length?'block':'none';
+  if(ov.length)ao.textContent=`⚠️ ${ov.length} livre${ov.length>1?'s':''} EN RETARD — des frais s'appliquent !`;
+  if(ug.length)au.textContent=`🕐 ${ug.length} livre${ug.length>1?'s':''} à rendre très prochainement`;
+  const bdg=document.getElementById('tb-bdg');
+  bdg.textContent=tot||''; bdg.style.display=tot?'flex':'none';
+  /* Stats */
+  document.getElementById('st-tot').textContent=books.length;
+  const oel=document.getElementById('st-ov');
+  oel.textContent=ov.length; oel.style.color=ov.length?'var(--red)':'var(--green)';
+  const uel=document.getElementById('st-ug');
+  uel.textContent=ug.length; uel.style.color=ug.length?'var(--orange)':'var(--brown)';
+  document.getElementById('loans-n').textContent=books.length;
 }
+
+/* NAVIGATION DIRECTE depuis les stats */
+function goFilter(f){
+  curF=f;
+  goTab('emprunts');
+  setFilter(f,false);
+  renderLoans();
+}
+
+/* FILTRES */
+function setFilter(f,doRender){
+  if(doRender===undefined)doRender=true;
+  curF=f;
+  ['tous','retard','urgent','ok'].forEach(x=>{
+    const b=document.getElementById('fb-'+x);
+    if(b)b.classList.toggle('on',x===f);
+  });
+  if(doRender)renderLoans();
+}
+
+/* AFFICHAGE LIVRES */
 function renderLoans(){
-  document.getElementById('loans-count').textContent=books.length;
   const list=document.getElementById('loans-list');
-  if(!books.length){ list.innerHTML=`<div class="empty"><div class="empty-i">📭</div><div class="empty-t">Aucun emprunt</div><div class="empty-s">Utilise l'onglet ➕ pour ajouter tes livres</div></div>`; return; }
-  const ov=books.filter(b=>daysLeft(b.due)<0).sort((a,b)=>daysLeft(a.due)-daysLeft(b.due));
-  const ug=books.filter(b=>{ const d=daysLeft(b.due); return d>=0&&d<=3; }).sort((a,b)=>daysLeft(a.due)-daysLeft(b.due));
-  const ok=books.filter(b=>daysLeft(b.due)>3).sort((a,b)=>daysLeft(a.due)-daysLeft(b.due));
-  let html='';
-  if(ov.length) html+=`<div class="loans-section"><div class="loans-section-title ls-overdue">🔴 En retard (${ov.length})</div>${ov.map(bookHtml).join('')}</div>`;
-  if(ug.length) html+=`<div class="loans-section"><div class="loans-section-title ls-urgent">🟡 À rendre bientôt (${ug.length})</div>${ug.map(bookHtml).join('')}</div>`;
-  if(ok.length) html+=`<div class="loans-section"><div class="loans-section-title ls-ok">🟢 En cours (${ok.length})</div>${ok.map(bookHtml).join('')}</div>`;
-  list.innerHTML=html;
+  let src=[...books];
+  if(curF==='retard') src=src.filter(b=>dLeft(b.due)<0);
+  if(curF==='urgent') src=src.filter(b=>{const d=dLeft(b.due);return d>=0&&d<=3;});
+  if(curF==='ok')     src=src.filter(b=>dLeft(b.due)>3);
+  if(!src.length){
+    const M={tous:['📭','Aucun emprunt',"Utilise l'onglet ➕"],retard:['✅','Aucun retard','Tout est dans les temps !'],urgent:['👌','Aucun urgent','Rien à rendre dans 3 jours'],ok:['📖','Aucun emprunt en cours','']};
+    const[i,t,s]=M[curF]||M.tous;
+    list.innerHTML=`<div class="empty"><div class="em-i">${i}</div><div class="em-t">${t}</div><div class="em-s">${s}</div></div>`;
+    return;
+  }
+  const ov=src.filter(b=>dLeft(b.due)<0).sort((a,b)=>dLeft(a.due)-dLeft(b.due));
+  const ug=src.filter(b=>{const d=dLeft(b.due);return d>=0&&d<=3;}).sort((a,b)=>dLeft(a.due)-dLeft(b.due));
+  const ok=src.filter(b=>dLeft(b.due)>3).sort((a,b)=>dLeft(a.due)-dLeft(b.due));
+  let h='';
+  if(ov.length)h+=grp('g-ov',`🔴 En retard (${ov.length})`,ov);
+  if(ug.length)h+=grp('g-urg',`🟡 À rendre bientôt (${ug.length})`,ug);
+  if(ok.length)h+=grp('g-ok',`🟢 En cours (${ok.length})`,ok);
+  list.innerHTML=h;
 }
-function bookHtml(b){
-  const d=daysLeft(b.due), cls=d<0?' ov':d<=3?' urg':'';
-  return`<div class="book-card${cls}" id="bc-${b.id}"><span class="bc-emoji">${b.cover}</span><div class="bc-info"><div class="bc-title">${b.title}</div>${b.author?`<div class="bc-author">${b.author}</div>`:''} ${b.isbn?`<div class="bc-isbn">ISBN : ${b.isbn}</div>`:''}<div class="bc-borrow">📅 Emprunté le ${fmtDate(b.borrowed)}</div><div class="bc-due-row"><span class="bc-due-lbl">↩ ${fmtDate(b.due)}</span>${makeBadge(d)}</div></div><button class="more-btn" onclick="toggleMenu(${b.id})">···</button><div class="del-menu" id="dm-${b.id}" style="display:none"><button class="del-ok" onclick="deleteBook(${b.id})">🗑 Rendu — Supprimer</button><button class="del-no" onclick="toggleMenu(${b.id})">Annuler</button></div></div>`;
+function grp(cls,lbl,lst){return`<div class="loan-grp"><div class="grp-hd ${cls}">${lbl}</div>${lst.map(bk).join('')}</div>`;}
+function bk(b){
+  const d=dLeft(b.due),cls=d<0?' ov':d<=3?' urg':'';
+  return`<div class="book${cls}" id="bk-${b.id}"><span class="b-emo">${b.cover}</span><div class="b-inf"><div class="b-tit">${b.title}</div>${b.author?`<div class="b-aut">${b.author}</div>`:''} ${b.isbn?`<div class="b-isbn">ISBN:${b.isbn}</div>`:''}<div class="b-bor">📅 Emprunté le ${fmt(b.borrowed)}</div><div class="b-due"><span class="b-due-l">↩ ${fmt(b.due)}</span>${mkBadge(d)}</div></div><button class="more" onclick="togMenu(${b.id})">···</button><div class="del-m" id="dm-${b.id}" style="display:none"><button class="del-y" onclick="delBook(${b.id})">🗑 Rendu — Supprimer</button><button class="del-n" onclick="togMenu(${b.id})">Annuler</button></div></div>`;
 }
-function toggleMenu(id){
-  if(openMenu&&openMenu!==id){ const p=document.getElementById('dm-'+openMenu); if(p)p.style.display='none'; }
+function togMenu(id){
+  if(openMenu&&openMenu!==id){const p=document.getElementById('dm-'+openMenu);if(p)p.style.display='none';}
   const m=document.getElementById('dm-'+id); if(!m)return;
-  const showing=m.style.display!=='none';
-  m.style.display=showing?'none':'flex';
-  openMenu=showing?null:id;
+  const vis=m.style.display!=='none';
+  m.style.display=vis?'none':'flex';
+  openMenu=vis?null:id;
 }
-function deleteBook(id){ books=books.filter(b=>b.id!==id); save(); updateAlerts(); renderLoans(); openMenu=null; }
-function checkForm(){
-  document.getElementById('add-btn').disabled=!(document.getElementById('f-title').value.trim()&&document.getElementById('f-due').value);
-}
+function delBook(id){books=books.filter(b=>b.id!==id);save();updateAlerts();renderLoans();openMenu=null;}
+
+/* FORMULAIRE */
+function chkForm(){document.getElementById('add-btn').disabled=!(document.getElementById('f-tit').value.trim()&&document.getElementById('f-due').value);}
 function addBook(){
-  const book={ id:Date.now(), title:document.getElementById('f-title').value.trim(), author:document.getElementById('f-author').value.trim(), isbn:document.getElementById('f-isbn').value.trim(), borrowed:document.getElementById('f-borrow').value, due:document.getElementById('f-due').value, cover:covers[Math.floor(Math.random()*covers.length)] };
+  const book={id:Date.now(),title:document.getElementById('f-tit').value.trim(),author:document.getElementById('f-aut').value.trim(),isbn:document.getElementById('f-isbn').value.trim(),borrowed:document.getElementById('f-bor').value,due:document.getElementById('f-due').value,cover:CVR[Math.floor(Math.random()*CVR.length)]};
   books.unshift(book); save(); updateAlerts();
-  ['f-title','f-author','f-isbn','f-due'].forEach(id=>document.getElementById(id).value='');
+  ['f-tit','f-aut','f-isbn','f-due'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('add-btn').disabled=true;
-  const msg=document.getElementById('success-msg'); msg.style.display='block';
-  setTimeout(()=>{ msg.style.display='none'; goTab('emprunts'); },1300);
+  const msg=document.getElementById('ok-msg'); msg.style.display='block';
+  setTimeout(()=>{msg.style.display='none';goFilter('tous');},1200);
 }
+
+/* ONGLETS */
 function goTab(tab){
-  ['carte','emprunts','ajouter'].forEach(t=>{ document.getElementById('page-'+t).classList.toggle('active',t===tab); document.getElementById('tab-'+t).classList.toggle('active',t===tab); });
+  ['carte','emprunts','ajouter'].forEach(t=>{
+    document.getElementById('pg-'+t).classList.toggle('on',t===tab);
+    document.getElementById('tb-'+t).classList.toggle('on',t===tab);
+  });
+  document.getElementById('scroll').scrollTop=0;
   openMenu=null;
-  if(tab==='emprunts') renderLoans();
-  if(tab==='carte'){ renderCard(); updateAlerts(); }
-  if(tab==='ajouter'&&!document.getElementById('f-borrow').value) document.getElementById('f-borrow').value=new Date().toISOString().split('T')[0];
+  if(tab==='emprunts')renderLoans();
+  if(tab==='carte'){renderCard();updateAlerts();}
+  if(tab==='ajouter'&&!document.getElementById('f-bor').value)
+    document.getElementById('f-bor').value=new Date().toISOString().split('T')[0];
 }
-function initApp(){ renderCard(); updateAlerts(); document.getElementById('f-borrow').value=new Date().toISOString().split('T')[0]; }
-window.addEventListener('load',()=>{ if(!card){ /* show setup */ } else { document.getElementById('setup-screen').classList.add('hidden'); initApp(); } });
+
+/* INIT */
+function initApp(){renderCard();updateAlerts();document.getElementById('f-bor').value=new Date().toISOString().split('T')[0];}
+window.addEventListener('load',()=>{
+  if(!card){/* setup visible */}
+  else{document.getElementById('setup').classList.add('off');initApp();}
+});
 </script>
 </body>
 </html>
