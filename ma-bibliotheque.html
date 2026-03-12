@@ -94,9 +94,20 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .badge{border-radius:20px;padding:2px 7px;font-size:10px;font-family:sans-serif;font-weight:bold;color:#fff}
 .bov{background:var(--re)}.bur{background:var(--or)}.btd{background:#e17055}.bok{background:var(--gr)}
 .mbtn{background:none;border:none;cursor:pointer;color:#ccc;font-size:17px;padding:0 2px;align-self:flex-start;flex-shrink:0}
-.dmenu{width:100%;display:flex;gap:7px;margin-top:7px;padding-top:7px;border-top:1px solid #f0e0c0}
+.dmenu{width:100%;display:flex;gap:7px;margin-top:7px;padding-top:7px;border-top:1px solid #f0e0c0;flex-wrap:wrap}
+.dmod{flex:1;background:#e8d5b0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold}
 .dyes{flex:1;background:var(--re);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
 .dno{flex:1;background:#f0e0c0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
+/* Formulaire d'édition inline */
+.editform{width:100%;margin-top:9px;padding-top:9px;border-top:1px solid #f0e0c0;display:none;flex-direction:column;gap:7px}
+.ef{display:flex;flex-direction:column;gap:3px}
+.ef label{font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px}
+.ef input{padding:8px 10px;border-radius:8px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none;width:100%}
+.ef input:focus{border-color:var(--go)}
+.efrow{display:flex;gap:7px}
+.efrow .ef{flex:1}
+.esave{width:100%;padding:9px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:9px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;margin-top:3px}
+.ecancel{width:100%;padding:8px;background:#f0e0c0;color:var(--br);border:none;border-radius:9px;font-size:12px;cursor:pointer;font-family:sans-serif}
 .empty{text-align:center;padding:34px 18px}
 .eico{font-size:44px;margin-bottom:9px}
 .etit{font-size:14px;color:var(--br);font-weight:bold;margin-bottom:4px}
@@ -130,24 +141,10 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   <div class="ssub">LAUSANNE · RENOUVAUD</div>
   <div class="sbox">
     <h3>🪪 Enregistre ta carte</h3>
-    <div class="sf">
-      <label>Prénom et Nom</label>
-      <input type="text" id="sname" placeholder="ex: Marcel Mellier">
-    </div>
-    <div class="sf">
-      <label>Numéro de carte</label>
-      <input type="text" id="scard" placeholder="ex: BVL-23456789" oninput="chkSu()">
-      <div class="snote">Tel qu'il figure sur ta carte physique</div>
-    </div>
-    <div class="sf">
-      <label>Code-barres (lettres + chiffres)</label>
-      <input type="text" id="sbc" placeholder="ex: BVL23456789" oninput="this.value=this.value.toUpperCase();chkSu()">
-      <div class="snote">Le code sous le code-barres (peut contenir BVL…). Si identique au numéro, laisse vide.</div>
-    </div>
-    <div class="sf">
-      <label>Validité (année)</label>
-      <input type="text" id="sval" placeholder="ex: 2027" inputmode="numeric" maxlength="4">
-    </div>
+    <div class="sf"><label>Prénom et Nom</label><input type="text" id="sname" placeholder="ex: Marcel Mellier"></div>
+    <div class="sf"><label>Numéro de carte</label><input type="text" id="scard" placeholder="ex: BVL-23456789" oninput="chkSu()"><div class="snote">Tel qu'il figure sur ta carte physique</div></div>
+    <div class="sf"><label>Code-barres (lettres + chiffres)</label><input type="text" id="sbc" placeholder="ex: BVL23456789" oninput="this.value=this.value.toUpperCase();chkSu()"><div class="snote">Si identique au numéro, laisse vide.</div></div>
+    <div class="sf"><label>Validité (année)</label><input type="text" id="sval" placeholder="ex: 2027" inputmode="numeric" maxlength="4"></div>
   </div>
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
@@ -197,7 +194,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
       </div>
       <button id="addbtn" onclick="ajouterLivre()" disabled>+ Ajouter ce livre</button>
     </div>
-    <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours. Des frais s'appliquent en cas de retard !</div></div>
+    <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
   </div>
 </div>
 <div id="tabs">
@@ -207,7 +204,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 </div>
 <script>
 var KC='bib_card_v4',KB='bib_books_v4';
-var card=null,books=[],numVisible=false,menuOuvert=null,filtre='tous';
+var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
 try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
 try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
 function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
@@ -299,7 +296,7 @@ function afficherPage(page){
   document.getElementById('pg-'+page).classList.add('on');
   document.getElementById('tb-'+page).classList.add('on');
   document.getElementById('scroll').scrollTop=0;
-  menuOuvert=null;
+  menuOuvert=null;editOuvert=null;
   if(page==='emprunts')afficherLivres();
   if(page==='carte'){afficherCarte();mettreAJourAlertes();}
   if(page==='ajouter'){var f=document.getElementById('fbor');if(!f.value)f.value=new Date().toISOString().split('T')[0];}
@@ -308,10 +305,7 @@ function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);affiche
 function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
 function activerFiltre(f){
   var liste=['tous','retard','urgent','ok'];
-  for(var i=0;i<liste.length;i++){
-    var b=document.getElementById('fb-'+liste[i]);
-    if(b)b.classList.toggle('on',liste[i]===f);
-  }
+  for(var i=0;i<liste.length;i++){var b=document.getElementById('fb-'+liste[i]);if(b)b.classList.toggle('on',liste[i]===f);}
 }
 function afficherLivres(){
   var list=document.getElementById('llist');
@@ -341,12 +335,74 @@ function faireGroupe(cls,label,liste){
 }
 function faireLivre(b){
   var d=joursRestants(b.due),cls=d<0?' ov':d<=3?' ur':'';
-  return'<div class="book'+cls+'" id="bk-'+b.id+'"><span class="bemo">'+b.cover+'</span><div class="binf"><div class="btit">'+b.title+'</div>'+(b.author?'<div class="baut">'+b.author+'</div>':'')+(b.isbn?'<div class="bisbn">ISBN : '+b.isbn+'</div>':'')+'<div class="bbor">📅 Emprunté le '+formaterDate(b.borrowed)+'</div><div class="bdue"><span class="bdul">↩ '+formaterDate(b.due)+'</span>'+faireBadge(d)+'</div></div><button class="mbtn" onclick="toggleMenu('+b.id+')">···</button><div class="dmenu" id="dm-'+b.id+'" style="display:none"><button class="dyes" onclick="supprimerLivre('+b.id+')">🗑 Rendu — Supprimer</button><button class="dno" onclick="toggleMenu('+b.id+')">Annuler</button></div></div>';
+  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+
+    '<span class="bemo">'+b.cover+'</span>'+
+    '<div class="binf">'+
+      '<div class="btit">'+b.title+'</div>'+
+      (b.author?'<div class="baut">'+b.author+'</div>':'')+
+      (b.isbn?'<div class="bisbn">ISBN : '+b.isbn+'</div>':'')+
+      '<div class="bbor">📅 Emprunté le '+formaterDate(b.borrowed)+'</div>'+
+      '<div class="bdue"><span class="bdul">↩ '+formaterDate(b.due)+'</span>'+faireBadge(d)+'</div>'+
+    '</div>'+
+    '<button class="mbtn" onclick="toggleMenu('+b.id+')">···</button>'+
+    '<div class="dmenu" id="dm-'+b.id+'" style="display:none">'+
+      '<button class="dmod" onclick="ouvrirEdit('+b.id+')">✏️ Modifier</button>'+
+      '<button class="dyes" onclick="supprimerLivre('+b.id+')">🗑 Rendu</button>'+
+      '<button class="dno"  onclick="toggleMenu('+b.id+')">Annuler</button>'+
+    '</div>'+
+    '<div class="editform" id="ef-'+b.id+'">'+
+      '<div class="ef"><label>Titre</label><input type="text" id="ef-tit-'+b.id+'" value="'+echapper(b.title)+'"></div>'+
+      '<div class="ef"><label>Auteur</label><input type="text" id="ef-aut-'+b.id+'" value="'+echapper(b.author||'')+'"></div>'+
+      '<div class="ef"><label>ISBN</label><input type="text" id="ef-isbn-'+b.id+'" value="'+echapper(b.isbn||'')+'" inputmode="numeric"></div>'+
+      '<div class="efrow">'+
+        '<div class="ef"><label>Emprunté le</label><input type="date" id="ef-bor-'+b.id+'" value="'+b.borrowed+'"></div>'+
+        '<div class="ef"><label>À rendre le</label><input type="date" id="ef-due-'+b.id+'" value="'+b.due+'"></div>'+
+      '</div>'+
+      '<button class="esave" onclick="sauverEdit('+b.id+')">✓ Enregistrer</button>'+
+      '<button class="ecancel" onclick="fermerEdit('+b.id+')">Annuler</button>'+
+    '</div>'+
+  '</div>';
 }
+function echapper(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function toggleMenu(id){
   if(menuOuvert&&menuOuvert!==id){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';}
   var m=document.getElementById('dm-'+id);if(!m)return;
   var v=m.style.display!=='none';m.style.display=v?'none':'flex';menuOuvert=v?null:id;
+}
+function ouvrirEdit(id){
+  // Fermer tout menu ouvert
+  if(menuOuvert){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';menuOuvert=null;}
+  // Fermer autre edit ouvert
+  if(editOuvert&&editOuvert!==id){var e=document.getElementById('ef-'+editOuvert);if(e)e.style.display='none';}
+  var ef=document.getElementById('ef-'+id);
+  if(!ef)return;
+  ef.style.display='flex';
+  editOuvert=id;
+  // Focus sur le titre
+  var t=document.getElementById('ef-tit-'+id);
+  if(t)setTimeout(function(){t.focus();},100);
+}
+function fermerEdit(id){
+  var ef=document.getElementById('ef-'+id);if(ef)ef.style.display='none';
+  editOuvert=null;
+}
+function sauverEdit(id){
+  var tit=document.getElementById('ef-tit-'+id).value.trim();
+  if(!tit)return;
+  for(var i=0;i<books.length;i++){
+    if(books[i].id===id){
+      books[i].title   = tit;
+      books[i].author  = document.getElementById('ef-aut-'+id).value.trim();
+      books[i].isbn    = document.getElementById('ef-isbn-'+id).value.trim();
+      books[i].borrowed= document.getElementById('ef-bor-'+id).value;
+      books[i].due     = document.getElementById('ef-due-'+id).value;
+      break;
+    }
+  }
+  sauver();
+  mettreAJourAlertes();
+  afficherLivres();
+  editOuvert=null;
 }
 function supprimerLivre(id){books=books.filter(function(b){return b.id!==id;});sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;}
 function chkForm(){document.getElementById('addbtn').disabled=!(document.getElementById('ftit').value.trim()&&document.getElementById('fdue').value);}
