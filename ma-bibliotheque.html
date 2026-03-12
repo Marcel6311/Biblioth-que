@@ -50,8 +50,8 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .lhorg{color:var(--go);font-size:13px;font-weight:bold}
 .lhsub{color:#a07040;font-size:10px;font-family:sans-serif;margin-top:1px}
 .lsep{height:1px;background:rgba(200,147,58,0.2);margin-bottom:13px}
-.bcbox{background:#fff;border-radius:8px;padding:9px 11px 6px;margin-bottom:11px}
-#bccanvas{display:block;width:100%}
+.bcbox{background:#fff;border-radius:8px;padding:10px;margin-bottom:11px;display:flex;flex-direction:column;align-items:center}
+#bccanvas{width:100% !important;height:auto !important}
 .lholder{color:rgba(200,147,58,0.5);font-size:11px;font-family:sans-serif;text-align:right;margin-bottom:7px}
 .lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .llbl{color:#a07040;font-size:10px;font-family:sans-serif}
@@ -126,9 +126,18 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .tbl{font-size:10px;font-family:sans-serif;color:var(--mu)}
 .tb.on .tbl{color:var(--br);font-weight:bold}
 .tbbdg{position:absolute;top:2px;right:calc(50% - 19px);background:var(--re);color:#fff;border-radius:10px;min-width:15px;height:15px;font-size:9px;display:none;align-items:center;justify-content:center;font-family:monospace;padding:0 3px}
+/* PLEIN ÉCRAN code-barres */
+#bcfullscreen{display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#bcfullscreen.on{display:flex}
+#bcfull{width:90vw}
+.bcfname{font-size:15px;font-family:Georgia,serif;color:#333;font-weight:bold}
+.bcfcode{font-size:13px;font-family:monospace;color:#666;letter-spacing:2px}
+.bcfclose{padding:12px 32px;background:var(--br);color:var(--go);border:none;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
+.bcfhint{font-size:11px;color:#999;font-family:sans-serif;text-align:center}
 </style>
 </head>
 <body>
+
 <div id="setup">
   <div class="slogo">📚</div>
   <div class="stitle">Ma Bibliothèque</div>
@@ -142,31 +151,44 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   </div>
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
+
+<!-- PLEIN ÉCRAN pour scanner -->
+<div id="bcfullscreen" onclick="fermerPleinEcran()">
+  <div class="bcfname" id="bcfname"></div>
+  <svg id="bcfull"></svg>
+  <div class="bcfcode" id="bcfcode"></div>
+  <div class="bcfhint">☀️ Mets la luminosité au maximum · Appuie pour fermer</div>
+  <button class="bcfclose" onclick="fermerPleinEcran()">Fermer</button>
+</div>
+
 <div id="hdr">
   <div class="hl"><span class="hico">📚</span><div><div class="hnm">Ma Bibliothèque</div><div class="hsb">Bibliothèque de Lausanne</div></div></div>
   <div class="hr"><div id="apill">⚠️ <span id="acount">0</span></div><button id="cfgbtn" onclick="openSetup()">⚙️</button></div>
 </div>
 <div id="astrip"><div id="aov" class="ai"></div><div id="aug" class="ai"></div></div>
+
 <div id="scroll">
   <div class="pg" id="pg-carte">
     <div class="ptit">Ma Carte de Membre</div>
     <div class="lcard">
       <div class="lhead"><span class="lhico">📚</span><div><div class="lhorg">Bibliothèque de Lausanne</div><div class="lhsub">Réseau des bibliothèques vaudoises · RENOUVAUD</div></div></div>
       <div class="lsep"></div>
-      <div class="bcbox">
+      <div class="bcbox" onclick="ouvrirPleinEcran()" style="cursor:pointer">
         <svg id="bccanvas"></svg>
+        <div style="font-size:10px;color:#aaa;font-family:sans-serif;margin-top:4px">👆 Appuie pour agrandir</div>
       </div>
       <div class="lholder" id="lholder"></div>
       <div class="lrow"><span class="llbl">N° DE CARTE</span><div class="lnbox"><span class="lnum" id="lnum">—</span><button class="eye" id="eyebtn" onclick="toggleNum()">👁</button></div></div>
       <div class="lfoot"><span>✓ Valide <span id="lval">—</span></span><span>Canton de Vaud</span></div>
     </div>
-    <div class="shint">📡 Présente le code-barres au scanner de la bibliothèque</div>
+    <div class="shint">📡 Appuie sur le code-barres pour l'agrandir · Luminosité max</div>
     <div class="srow">
       <div class="sbox" onclick="allerVers('tous')"><div class="snum" id="stot">0</div><div class="slbl">Emprunts</div><div class="sarr">voir tous →</div></div>
       <div class="sbox" onclick="allerVers('retard')"><div class="snum" id="sov">0</div><div class="slbl">En retard</div><div class="sarr">voir →</div></div>
       <div class="sbox" onclick="allerVers('urgent')"><div class="snum" id="sug">0</div><div class="slbl">Urgents</div><div class="sarr">voir →</div></div>
     </div>
   </div>
+
   <div class="pg on" id="pg-emprunts">
     <div class="ptit">Mes Emprunts <span class="pbdg" id="lcount">0</span></div>
     <div class="fbar">
@@ -177,6 +199,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     </div>
     <div id="llist"></div>
   </div>
+
   <div class="pg" id="pg-ajouter">
     <div class="ptit">Nouvel Emprunt</div>
     <div id="okmsg">✓ Livre ajouté !</div>
@@ -193,11 +216,13 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
   </div>
 </div>
+
 <div id="tabs">
   <button class="tb"    id="tb-carte"    onclick="afficherPage('carte')"><span class="tbi">🪪</span><span class="tbl">Carte</span></button>
   <button class="tb on" id="tb-emprunts" onclick="afficherPage('emprunts')"><span class="tbi">📚</span><span class="tbl">Emprunts</span><span class="tbbdg" id="tbbdg"></span></button>
   <button class="tb"    id="tb-ajouter"  onclick="afficherPage('ajouter')"><span class="tbi">➕</span><span class="tbl">Ajouter</span></button>
 </div>
+
 <script>
 var KC='bib_card_v4',KB='bib_books_v4';
 var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
@@ -224,28 +249,43 @@ function openSetup(){
     document.getElementById('subtn').disabled=false;
   }
 }
-function dessinerBarcode(code){
+function dessinerBarcode(svgId,code){
   try{
-    JsBarcode('#bccanvas', code, {
+    JsBarcode('#'+svgId, code, {
       format:'CODE128',
-      width:2,
-      height:60,
+      width:2.5,
+      height:80,
       displayValue:true,
-      fontSize:13,
-      margin:6,
+      fontSize:14,
+      margin:8,
       background:'#ffffff',
-      lineColor:'#111111'
+      lineColor:'#000000'
     });
+    document.getElementById(svgId).style.width='100%';
+    document.getElementById(svgId).style.height='auto';
   }catch(e){
-    document.getElementById('bccanvas').innerHTML='<text x="50%" y="50%" text-anchor="middle" font-size="11" fill="#999">Code-barres indisponible</text>';
+    console.log('Barcode error:',e);
   }
 }
 function afficherCarte(){
   if(!card)return;
-  dessinerBarcode(card.bc);
+  dessinerBarcode('bccanvas', card.bc);
   document.getElementById('lholder').textContent=card.name||'';
   document.getElementById('lval').textContent=card.val||'—';
   document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
+}
+function ouvrirPleinEcran(){
+  if(!card)return;
+  dessinerBarcode('bcfull', card.bc);
+  document.getElementById('bcfname').textContent=card.name||'';
+  document.getElementById('bcfcode').textContent=card.bc;
+  document.getElementById('bcfullscreen').classList.add('on');
+  // Luminosité max si supporté
+  if(screen&&screen.orientation){}
+  try{if(navigator.wakeLock)navigator.wakeLock.request('screen');}catch(e){}
+}
+function fermerPleinEcran(){
+  document.getElementById('bcfullscreen').classList.remove('on');
 }
 function masquer(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
 function toggleNum(){numVisible=!numVisible;document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);document.getElementById('eyebtn').textContent=numVisible?'🙈':'👁';}
