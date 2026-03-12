@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Ma Bib">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACZUlEQVR4nO3cL04cYRyAYSCbChSiGERFFSSomhLOwA0QNz0EJ8BUV2EQvUEPgGrCCbgCCQgUGonhTbrbj52hPI+eP59485vZ+ZLdPNzbgBdtTb0A5kscJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQFlMvYC5uP/9c9pSPn768xkoGWlwd/cvpJgdJHCRxkMRBEgdJHKQVf8qePGz//cH720sc/Ep+fLifeglvj8lBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB8odxA9z8+jr1Ep4dnF6PupTJQRIHaa2PlW93d+u83eXu7jpv9/8xOUheSAcY+A44KyYHSRyktT5WvCG+LSYHSRwkcZDEQfKdYwAbb7w79lZIJgfJO8cA9lZ4d3w+J5kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpMVqp/3eeVzi4I0lDmY+TA6SOEibh3tTL4G5MjlI4iCJgyQOkjhI4iCJgyQO0op7Ky+6ODseeDVW9v38z5DrmBwkcZDEQRIHSRwkW/Ykk4MkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SE8IGR7ko95bbAAAAABJRU5ErkJggg==">
 <title>Ma Bibliothèque</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -129,7 +129,6 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 </style>
 </head>
 <body>
-
 <div id="setup">
   <div class="slogo">📚</div>
   <div class="stitle">Ma Bibliothèque</div>
@@ -143,15 +142,12 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   </div>
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
-
 <div id="hdr">
   <div class="hl"><span class="hico">📚</span><div><div class="hnm">Ma Bibliothèque</div><div class="hsb">Bibliothèque de Lausanne</div></div></div>
   <div class="hr"><div id="apill">⚠️ <span id="acount">0</span></div><button id="cfgbtn" onclick="openSetup()">⚙️</button></div>
 </div>
 <div id="astrip"><div id="aov" class="ai"></div><div id="aug" class="ai"></div></div>
-
 <div id="scroll">
-
   <div class="pg" id="pg-carte">
     <div class="ptit">Ma Carte de Membre</div>
     <div class="lcard">
@@ -169,7 +165,6 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
       <div class="sbox" onclick="allerVers('urgent')"><div class="snum" id="sug">0</div><div class="slbl">Urgents</div><div class="sarr">voir →</div></div>
     </div>
   </div>
-
   <div class="pg on" id="pg-emprunts">
     <div class="ptit">Mes Emprunts <span class="pbdg" id="lcount">0</span></div>
     <div class="fbar">
@@ -180,7 +175,6 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     </div>
     <div id="llist"></div>
   </div>
-
   <div class="pg" id="pg-ajouter">
     <div class="ptit">Nouvel Emprunt</div>
     <div id="okmsg">✓ Livre ajouté !</div>
@@ -196,25 +190,19 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     </div>
     <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
   </div>
-
 </div>
-
 <div id="tabs">
   <button class="tb"    id="tb-carte"    onclick="afficherPage('carte')"><span class="tbi">🪪</span><span class="tbl">Carte</span></button>
   <button class="tb on" id="tb-emprunts" onclick="afficherPage('emprunts')"><span class="tbi">📚</span><span class="tbl">Emprunts</span><span class="tbbdg" id="tbbdg"></span></button>
   <button class="tb"    id="tb-ajouter"  onclick="afficherPage('ajouter')"><span class="tbi">➕</span><span class="tbl">Ajouter</span></button>
 </div>
-
 <script>
-var KC='bib_card_v4', KB='bib_books_v4';
-var card=null, books=[], numVisible=false, menuOuvert=null, editOuvert=null, filtre='tous';
+var KC='bib_card_v4',KB='bib_books_v4';
+var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
 try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
 try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
-
 function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
-
 function chkSu(){document.getElementById('subtn').disabled=document.getElementById('scard').value.trim().length<3;}
-
 function doSetup(){
   var name=document.getElementById('sname').value.trim();
   var num=document.getElementById('scard').value.trim();
@@ -224,7 +212,6 @@ function doSetup(){
   document.getElementById('setup').classList.add('off');
   demarrer();
 }
-
 function openSetup(){
   document.getElementById('setup').classList.remove('off');
   if(card){
@@ -235,7 +222,6 @@ function openSetup(){
     document.getElementById('subtn').disabled=false;
   }
 }
-
 function dessinerBarcode(code){
   var cv=document.getElementById('bccanvas');if(!cv)return;
   var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -252,7 +238,6 @@ function dessinerBarcode(code){
     if(on){var w2=bw*(rnd()>0.58?2.0:1.0);ctx.fillRect(Math.floor(j*bw),0,Math.ceil(w2),Math.ceil(h));}
   }
 }
-
 function afficherCarte(){
   if(!card)return;
   dessinerBarcode(card.bc);
@@ -261,10 +246,8 @@ function afficherCarte(){
   document.getElementById('lval').textContent=card.val||'—';
   document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
 }
-
 function masquer(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
 function toggleNum(){numVisible=!numVisible;document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);document.getElementById('eyebtn').textContent=numVisible?'🙈':'👁';}
-
 function joursRestants(due){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
 function formaterDate(d){return new Date(d).toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});}
 function faireBadge(d){
@@ -274,9 +257,7 @@ function faireBadge(d){
   return'<span class="badge bok">'+d+'j restants</span>';
 }
 function echapper(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
 var CVR=['📕','📗','📘','📙','📒','📓','📔'];
-
 function mettreAJourAlertes(){
   var ov=books.filter(function(b){return joursRestants(b.due)<0;});
   var ug=books.filter(function(b){var d=joursRestants(b.due);return d>=0&&d<=3;});
@@ -296,7 +277,6 @@ function mettreAJourAlertes(){
   var elUg=document.getElementById('sug');elUg.textContent=ug.length;elUg.style.color=ug.length?'var(--or)':'var(--br)';
   document.getElementById('lcount').textContent=books.length;
 }
-
 function afficherPage(page){
   document.getElementById('pg-carte').classList.remove('on');
   document.getElementById('pg-emprunts').classList.remove('on');
@@ -312,14 +292,12 @@ function afficherPage(page){
   if(page==='carte'){afficherCarte();mettreAJourAlertes();}
   if(page==='ajouter'){var f=document.getElementById('fbor');if(!f.value)f.value=new Date().toISOString().split('T')[0];}
 }
-
 function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);afficherLivres();}
 function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
 function activerFiltre(f){
   var liste=['tous','retard','urgent','ok'];
   for(var i=0;i<liste.length;i++){var b=document.getElementById('fb-'+liste[i]);if(b)b.classList.toggle('on',liste[i]===f);}
 }
-
 function afficherLivres(){
   var list=document.getElementById('llist');
   var src=books.slice();
@@ -341,16 +319,14 @@ function afficherLivres(){
   if(ok.length)html+=faireGroupe('gok','🟢 En cours ('+ok.length+')',ok);
   list.innerHTML=html;
 }
-
 function faireGroupe(cls,label,liste){
   var html='<div class="grp"><div class="ghd '+cls+'">'+label+'</div>';
   for(var i=0;i<liste.length;i++)html+=faireLivre(liste[i]);
   return html+'</div>';
 }
-
 function faireLivre(b){
   var d=joursRestants(b.due),cls=d<0?' ov':d<=3?' ur':'';
-  return '<div class="book'+cls+'" id="bk-'+b.id+'">'+
+  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+
     '<span class="bemo">'+b.cover+'</span>'+
     '<div class="binf">'+
       '<div class="btit">'+echapper(b.title)+'</div>'+
@@ -378,52 +354,35 @@ function faireLivre(b){
     '</div>'+
   '</div>';
 }
-
 function toggleMenu(id){
   if(menuOuvert&&menuOuvert!==id){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';}
   var m=document.getElementById('dm-'+id);if(!m)return;
-  var v=m.style.display!=='none';m.style.display=v?'none':'flex';
-  menuOuvert=v?null:id;
+  var v=m.style.display!=='none';m.style.display=v?'none':'flex';menuOuvert=v?null:id;
 }
-
 function ouvrirEdit(id){
   if(menuOuvert){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';menuOuvert=null;}
   if(editOuvert&&editOuvert!==id){var e=document.getElementById('ef-'+editOuvert);if(e)e.style.display='none';}
-  var ef=document.getElementById('ef-'+id);
-  if(!ef)return;
-  ef.style.display='flex';
-  editOuvert=id;
+  var ef=document.getElementById('ef-'+id);if(!ef)return;
+  ef.style.display='flex';editOuvert=id;
   setTimeout(function(){var t=document.getElementById('ef-tit-'+id);if(t)t.focus();},100);
 }
-
-function fermerEdit(id){
-  var ef=document.getElementById('ef-'+id);if(ef)ef.style.display='none';
-  editOuvert=null;
-}
-
+function fermerEdit(id){var ef=document.getElementById('ef-'+id);if(ef)ef.style.display='none';editOuvert=null;}
 function sauverEdit(id){
-  var tit=document.getElementById('ef-tit-'+id).value.trim();
-  if(!tit)return;
+  var tit=document.getElementById('ef-tit-'+id).value.trim();if(!tit)return;
   for(var i=0;i<books.length;i++){
     if(books[i].id===id){
-      books[i].title   =tit;
-      books[i].author  =document.getElementById('ef-aut-'+id).value.trim();
-      books[i].isbn    =document.getElementById('ef-isbn-'+id).value.trim();
+      books[i].title=tit;
+      books[i].author=document.getElementById('ef-aut-'+id).value.trim();
+      books[i].isbn=document.getElementById('ef-isbn-'+id).value.trim();
       books[i].borrowed=document.getElementById('ef-bor-'+id).value;
-      books[i].due     =document.getElementById('ef-due-'+id).value;
+      books[i].due=document.getElementById('ef-due-'+id).value;
       break;
     }
   }
   sauver();mettreAJourAlertes();afficherLivres();editOuvert=null;
 }
-
-function supprimerLivre(id){
-  books=books.filter(function(b){return b.id!==id;});
-  sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;
-}
-
+function supprimerLivre(id){books=books.filter(function(b){return b.id!==id;});sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;}
 function chkForm(){document.getElementById('addbtn').disabled=!(document.getElementById('ftit').value.trim()&&document.getElementById('fdue').value);}
-
 function ajouterLivre(){
   var livre={id:Date.now(),title:document.getElementById('ftit').value.trim(),author:document.getElementById('faut').value.trim(),isbn:document.getElementById('fisbn').value.trim(),borrowed:document.getElementById('fbor').value,due:document.getElementById('fdue').value,cover:CVR[Math.floor(Math.random()*CVR.length)]};
   books.unshift(livre);sauver();mettreAJourAlertes();
@@ -432,17 +391,12 @@ function ajouterLivre(){
   var msg=document.getElementById('okmsg');msg.style.display='block';
   setTimeout(function(){msg.style.display='none';allerVers('tous');},1200);
 }
-
 function demarrer(){
-  afficherCarte();
-  afficherLivres();
-  mettreAJourAlertes();
+  afficherCarte();afficherLivres();mettreAJourAlertes();
   document.getElementById('fbor').value=new Date().toISOString().split('T')[0];
 }
-
 window.addEventListener('load',function(){
-  if(!card){}
-  else{document.getElementById('setup').classList.add('off');demarrer();}
+  if(!card){}else{document.getElementById('setup').classList.add('off');demarrer();}
 });
 </script>
 </body>
