@@ -10,12 +10,7 @@
 <title>Ma Bibliothèque</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;
-  --go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;
-  --re:#d63031;--or:#e17055;--gr:#00b894;
-  --sb:env(safe-area-inset-bottom,0px)
-}
+:root{--bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;--go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;--re:#d63031;--or:#e17055;--gr:#00b894;--sb:env(safe-area-inset-bottom,0px)}
 html,body{height:100%;background:#1a0a00}
 body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430px;margin:0 auto;background:var(--bg);height:100dvh}
 #setup{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a0a00,#3d1c00);display:flex;flex-direction:column;align-items:center;padding:36px 22px 28px;overflow-y:auto}
@@ -94,20 +89,19 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .badge{border-radius:20px;padding:2px 7px;font-size:10px;font-family:sans-serif;font-weight:bold;color:#fff}
 .bov{background:var(--re)}.bur{background:var(--or)}.btd{background:#e17055}.bok{background:var(--gr)}
 .mbtn{background:none;border:none;cursor:pointer;color:#ccc;font-size:17px;padding:0 2px;align-self:flex-start;flex-shrink:0}
-.dmenu{width:100%;display:flex;gap:7px;margin-top:7px;padding-top:7px;border-top:1px solid #f0e0c0;flex-wrap:wrap}
+.dmenu{width:100%;display:flex;gap:6px;margin-top:7px;padding-top:7px;border-top:1px solid #f0e0c0;flex-wrap:wrap}
 .dmod{flex:1;background:#e8d5b0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold}
 .dyes{flex:1;background:var(--re);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
 .dno{flex:1;background:#f0e0c0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
-/* Formulaire d'édition inline */
-.editform{width:100%;margin-top:9px;padding-top:9px;border-top:1px solid #f0e0c0;display:none;flex-direction:column;gap:7px}
+.editform{width:100%;margin-top:9px;padding-top:9px;border-top:2px solid var(--gl);display:none;flex-direction:column;gap:8px}
 .ef{display:flex;flex-direction:column;gap:3px}
 .ef label{font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px}
 .ef input{padding:8px 10px;border-radius:8px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none;width:100%}
 .ef input:focus{border-color:var(--go)}
 .efrow{display:flex;gap:7px}
 .efrow .ef{flex:1}
-.esave{width:100%;padding:9px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:9px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;margin-top:3px}
-.ecancel{width:100%;padding:8px;background:#f0e0c0;color:var(--br);border:none;border-radius:9px;font-size:12px;cursor:pointer;font-family:sans-serif}
+.esave{width:100%;padding:9px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:9px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
+.ecancel{width:100%;padding:8px;background:#f0e0c0;color:var(--br);border:none;border-radius:9px;font-size:12px;cursor:pointer;font-family:sans-serif;margin-top:3px}
 .empty{text-align:center;padding:34px 18px}
 .eico{font-size:44px;margin-bottom:9px}
 .etit{font-size:14px;color:var(--br);font-weight:bold;margin-bottom:4px}
@@ -135,6 +129,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 </style>
 </head>
 <body>
+
 <div id="setup">
   <div class="slogo">📚</div>
   <div class="stitle">Ma Bibliothèque</div>
@@ -143,17 +138,20 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     <h3>🪪 Enregistre ta carte</h3>
     <div class="sf"><label>Prénom et Nom</label><input type="text" id="sname" placeholder="ex: Marcel Mellier"></div>
     <div class="sf"><label>Numéro de carte</label><input type="text" id="scard" placeholder="ex: BVL-23456789" oninput="chkSu()"><div class="snote">Tel qu'il figure sur ta carte physique</div></div>
-    <div class="sf"><label>Code-barres (lettres + chiffres)</label><input type="text" id="sbc" placeholder="ex: BVL23456789" oninput="this.value=this.value.toUpperCase();chkSu()"><div class="snote">Si identique au numéro, laisse vide.</div></div>
+    <div class="sf"><label>Code-barres</label><input type="text" id="sbc" placeholder="ex: BVL23456789" oninput="this.value=this.value.toUpperCase();chkSu()"><div class="snote">Si identique au numéro, laisse vide.</div></div>
     <div class="sf"><label>Validité (année)</label><input type="text" id="sval" placeholder="ex: 2027" inputmode="numeric" maxlength="4"></div>
   </div>
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
+
 <div id="hdr">
   <div class="hl"><span class="hico">📚</span><div><div class="hnm">Ma Bibliothèque</div><div class="hsb">Bibliothèque de Lausanne</div></div></div>
   <div class="hr"><div id="apill">⚠️ <span id="acount">0</span></div><button id="cfgbtn" onclick="openSetup()">⚙️</button></div>
 </div>
 <div id="astrip"><div id="aov" class="ai"></div><div id="aug" class="ai"></div></div>
+
 <div id="scroll">
+
   <div class="pg" id="pg-carte">
     <div class="ptit">Ma Carte de Membre</div>
     <div class="lcard">
@@ -164,13 +162,14 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
       <div class="lrow"><span class="llbl">N° DE CARTE</span><div class="lnbox"><span class="lnum" id="lnum">—</span><button class="eye" id="eyebtn" onclick="toggleNum()">👁</button></div></div>
       <div class="lfoot"><span>✓ Valide <span id="lval">—</span></span><span>Canton de Vaud</span></div>
     </div>
-    <div class="shint">📡 Présente le code-barres au scanner de la bibliothèque</div>
+    <div class="shint">📡 Présente le code-barres au scanner</div>
     <div class="srow">
       <div class="sbox" onclick="allerVers('tous')"><div class="snum" id="stot">0</div><div class="slbl">Emprunts</div><div class="sarr">voir tous →</div></div>
       <div class="sbox" onclick="allerVers('retard')"><div class="snum" id="sov">0</div><div class="slbl">En retard</div><div class="sarr">voir →</div></div>
       <div class="sbox" onclick="allerVers('urgent')"><div class="snum" id="sug">0</div><div class="slbl">Urgents</div><div class="sarr">voir →</div></div>
     </div>
   </div>
+
   <div class="pg on" id="pg-emprunts">
     <div class="ptit">Mes Emprunts <span class="pbdg" id="lcount">0</span></div>
     <div class="fbar">
@@ -181,6 +180,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     </div>
     <div id="llist"></div>
   </div>
+
   <div class="pg" id="pg-ajouter">
     <div class="ptit">Nouvel Emprunt</div>
     <div id="okmsg">✓ Livre ajouté !</div>
@@ -196,30 +196,35 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     </div>
     <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
   </div>
+
 </div>
+
 <div id="tabs">
-  <button class="tb" id="tb-carte" onclick="afficherPage('carte')"><span class="tbi">🪪</span><span class="tbl">Carte</span></button>
+  <button class="tb"    id="tb-carte"    onclick="afficherPage('carte')"><span class="tbi">🪪</span><span class="tbl">Carte</span></button>
   <button class="tb on" id="tb-emprunts" onclick="afficherPage('emprunts')"><span class="tbi">📚</span><span class="tbl">Emprunts</span><span class="tbbdg" id="tbbdg"></span></button>
-  <button class="tb" id="tb-ajouter" onclick="afficherPage('ajouter')"><span class="tbi">➕</span><span class="tbl">Ajouter</span></button>
+  <button class="tb"    id="tb-ajouter"  onclick="afficherPage('ajouter')"><span class="tbi">➕</span><span class="tbl">Ajouter</span></button>
 </div>
+
 <script>
-var KC='bib_card_v4',KB='bib_books_v4';
-var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
+var KC='bib_card_v4', KB='bib_books_v4';
+var card=null, books=[], numVisible=false, menuOuvert=null, editOuvert=null, filtre='tous';
 try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
 try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
+
 function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
+
 function chkSu(){document.getElementById('subtn').disabled=document.getElementById('scard').value.trim().length<3;}
+
 function doSetup(){
   var name=document.getElementById('sname').value.trim();
   var num=document.getElementById('scard').value.trim();
   var bcv=document.getElementById('sbc').value.trim().toUpperCase();
-  var bc=bcv||num.toUpperCase();
-  var val=document.getElementById('sval').value.trim()||'2027';
-  card={name:name,num:num,bc:bc,val:val};
+  card={name:name,num:num,bc:bcv||num.toUpperCase(),val:document.getElementById('sval').value.trim()||'2027'};
   sauver();
   document.getElementById('setup').classList.add('off');
   demarrer();
 }
+
 function openSetup(){
   document.getElementById('setup').classList.remove('off');
   if(card){
@@ -230,6 +235,7 @@ function openSetup(){
     document.getElementById('subtn').disabled=false;
   }
 }
+
 function dessinerBarcode(code){
   var cv=document.getElementById('bccanvas');if(!cv)return;
   var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
@@ -246,6 +252,7 @@ function dessinerBarcode(code){
     if(on){var w2=bw*(rnd()>0.58?2.0:1.0);ctx.fillRect(Math.floor(j*bw),0,Math.ceil(w2),Math.ceil(h));}
   }
 }
+
 function afficherCarte(){
   if(!card)return;
   dessinerBarcode(card.bc);
@@ -254,8 +261,10 @@ function afficherCarte(){
   document.getElementById('lval').textContent=card.val||'—';
   document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
 }
+
 function masquer(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
 function toggleNum(){numVisible=!numVisible;document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);document.getElementById('eyebtn').textContent=numVisible?'🙈':'👁';}
+
 function joursRestants(due){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
 function formaterDate(d){return new Date(d).toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});}
 function faireBadge(d){
@@ -264,7 +273,10 @@ function faireBadge(d){
   if(d<=3)return'<span class="badge bur">'+d+'j restants</span>';
   return'<span class="badge bok">'+d+'j restants</span>';
 }
+function echapper(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
 var CVR=['📕','📗','📘','📙','📒','📓','📔'];
+
 function mettreAJourAlertes(){
   var ov=books.filter(function(b){return joursRestants(b.due)<0;});
   var ug=books.filter(function(b){var d=joursRestants(b.due);return d>=0&&d<=3;});
@@ -280,12 +292,11 @@ function mettreAJourAlertes(){
   var bdg=document.getElementById('tbbdg');
   bdg.textContent=tot||'';bdg.style.display=tot?'flex':'none';
   document.getElementById('stot').textContent=books.length;
-  var elOv=document.getElementById('sov');
-  elOv.textContent=ov.length;elOv.style.color=ov.length?'var(--re)':'var(--gr)';
-  var elUg=document.getElementById('sug');
-  elUg.textContent=ug.length;elUg.style.color=ug.length?'var(--or)':'var(--br)';
+  var elOv=document.getElementById('sov');elOv.textContent=ov.length;elOv.style.color=ov.length?'var(--re)':'var(--gr)';
+  var elUg=document.getElementById('sug');elUg.textContent=ug.length;elUg.style.color=ug.length?'var(--or)':'var(--br)';
   document.getElementById('lcount').textContent=books.length;
 }
+
 function afficherPage(page){
   document.getElementById('pg-carte').classList.remove('on');
   document.getElementById('pg-emprunts').classList.remove('on');
@@ -301,12 +312,14 @@ function afficherPage(page){
   if(page==='carte'){afficherCarte();mettreAJourAlertes();}
   if(page==='ajouter'){var f=document.getElementById('fbor');if(!f.value)f.value=new Date().toISOString().split('T')[0];}
 }
+
 function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);afficherLivres();}
 function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
 function activerFiltre(f){
   var liste=['tous','retard','urgent','ok'];
   for(var i=0;i<liste.length;i++){var b=document.getElementById('fb-'+liste[i]);if(b)b.classList.toggle('on',liste[i]===f);}
 }
+
 function afficherLivres(){
   var list=document.getElementById('llist');
   var src=books.slice();
@@ -328,19 +341,21 @@ function afficherLivres(){
   if(ok.length)html+=faireGroupe('gok','🟢 En cours ('+ok.length+')',ok);
   list.innerHTML=html;
 }
+
 function faireGroupe(cls,label,liste){
   var html='<div class="grp"><div class="ghd '+cls+'">'+label+'</div>';
   for(var i=0;i<liste.length;i++)html+=faireLivre(liste[i]);
   return html+'</div>';
 }
+
 function faireLivre(b){
   var d=joursRestants(b.due),cls=d<0?' ov':d<=3?' ur':'';
-  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+
+  return '<div class="book'+cls+'" id="bk-'+b.id+'">'+
     '<span class="bemo">'+b.cover+'</span>'+
     '<div class="binf">'+
-      '<div class="btit">'+b.title+'</div>'+
-      (b.author?'<div class="baut">'+b.author+'</div>':'')+
-      (b.isbn?'<div class="bisbn">ISBN : '+b.isbn+'</div>':'')+
+      '<div class="btit">'+echapper(b.title)+'</div>'+
+      (b.author?'<div class="baut">'+echapper(b.author)+'</div>':'')+
+      (b.isbn?'<div class="bisbn">ISBN : '+echapper(b.isbn)+'</div>':'')+
       '<div class="bbor">📅 Emprunté le '+formaterDate(b.borrowed)+'</div>'+
       '<div class="bdue"><span class="bdul">↩ '+formaterDate(b.due)+'</span>'+faireBadge(d)+'</div>'+
     '</div>'+
@@ -363,49 +378,52 @@ function faireLivre(b){
     '</div>'+
   '</div>';
 }
-function echapper(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
 function toggleMenu(id){
   if(menuOuvert&&menuOuvert!==id){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';}
   var m=document.getElementById('dm-'+id);if(!m)return;
-  var v=m.style.display!=='none';m.style.display=v?'none':'flex';menuOuvert=v?null:id;
+  var v=m.style.display!=='none';m.style.display=v?'none':'flex';
+  menuOuvert=v?null:id;
 }
+
 function ouvrirEdit(id){
-  // Fermer tout menu ouvert
   if(menuOuvert){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';menuOuvert=null;}
-  // Fermer autre edit ouvert
   if(editOuvert&&editOuvert!==id){var e=document.getElementById('ef-'+editOuvert);if(e)e.style.display='none';}
   var ef=document.getElementById('ef-'+id);
   if(!ef)return;
   ef.style.display='flex';
   editOuvert=id;
-  // Focus sur le titre
-  var t=document.getElementById('ef-tit-'+id);
-  if(t)setTimeout(function(){t.focus();},100);
+  setTimeout(function(){var t=document.getElementById('ef-tit-'+id);if(t)t.focus();},100);
 }
+
 function fermerEdit(id){
   var ef=document.getElementById('ef-'+id);if(ef)ef.style.display='none';
   editOuvert=null;
 }
+
 function sauverEdit(id){
   var tit=document.getElementById('ef-tit-'+id).value.trim();
   if(!tit)return;
   for(var i=0;i<books.length;i++){
     if(books[i].id===id){
-      books[i].title   = tit;
-      books[i].author  = document.getElementById('ef-aut-'+id).value.trim();
-      books[i].isbn    = document.getElementById('ef-isbn-'+id).value.trim();
-      books[i].borrowed= document.getElementById('ef-bor-'+id).value;
-      books[i].due     = document.getElementById('ef-due-'+id).value;
+      books[i].title   =tit;
+      books[i].author  =document.getElementById('ef-aut-'+id).value.trim();
+      books[i].isbn    =document.getElementById('ef-isbn-'+id).value.trim();
+      books[i].borrowed=document.getElementById('ef-bor-'+id).value;
+      books[i].due     =document.getElementById('ef-due-'+id).value;
       break;
     }
   }
-  sauver();
-  mettreAJourAlertes();
-  afficherLivres();
-  editOuvert=null;
+  sauver();mettreAJourAlertes();afficherLivres();editOuvert=null;
 }
-function supprimerLivre(id){books=books.filter(function(b){return b.id!==id;});sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;}
+
+function supprimerLivre(id){
+  books=books.filter(function(b){return b.id!==id;});
+  sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;
+}
+
 function chkForm(){document.getElementById('addbtn').disabled=!(document.getElementById('ftit').value.trim()&&document.getElementById('fdue').value);}
+
 function ajouterLivre(){
   var livre={id:Date.now(),title:document.getElementById('ftit').value.trim(),author:document.getElementById('faut').value.trim(),isbn:document.getElementById('fisbn').value.trim(),borrowed:document.getElementById('fbor').value,due:document.getElementById('fdue').value,cover:CVR[Math.floor(Math.random()*CVR.length)]};
   books.unshift(livre);sauver();mettreAJourAlertes();
@@ -414,12 +432,14 @@ function ajouterLivre(){
   var msg=document.getElementById('okmsg');msg.style.display='block';
   setTimeout(function(){msg.style.display='none';allerVers('tous');},1200);
 }
+
 function demarrer(){
   afficherCarte();
   afficherLivres();
   mettreAJourAlertes();
   document.getElementById('fbor').value=new Date().toISOString().split('T')[0];
 }
+
 window.addEventListener('load',function(){
   if(!card){}
   else{document.getElementById('setup').classList.add('off');demarrer();}
