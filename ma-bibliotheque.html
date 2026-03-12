@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Ma Bib">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Ma Bibliothèque</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;--go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;--re:#d63031;--or:#e17055;--gr:#00b894;--sb:env(safe-area-inset-bottom,0px)}
@@ -50,8 +51,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .lhsub{color:#a07040;font-size:10px;font-family:sans-serif;margin-top:1px}
 .lsep{height:1px;background:rgba(200,147,58,0.2);margin-bottom:13px}
 .bcbox{background:#fff;border-radius:8px;padding:9px 11px 6px;margin-bottom:11px}
-#bccanvas{display:block;width:100%;height:50px}
-.bclbl{text-align:center;font-family:monospace;font-size:11px;color:#444;margin-top:4px;letter-spacing:2px}
+#bccanvas{display:block;width:100%}
 .lholder{color:rgba(200,147,58,0.5);font-size:11px;font-family:sans-serif;text-align:right;margin-bottom:7px}
 .lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .llbl{color:#a07040;font-size:10px;font-family:sans-serif}
@@ -153,12 +153,14 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
     <div class="lcard">
       <div class="lhead"><span class="lhico">📚</span><div><div class="lhorg">Bibliothèque de Lausanne</div><div class="lhsub">Réseau des bibliothèques vaudoises · RENOUVAUD</div></div></div>
       <div class="lsep"></div>
-      <div class="bcbox"><canvas id="bccanvas" width="600" height="80"></canvas><div class="bclbl" id="bclbl"></div></div>
+      <div class="bcbox">
+        <svg id="bccanvas"></svg>
+      </div>
       <div class="lholder" id="lholder"></div>
       <div class="lrow"><span class="llbl">N° DE CARTE</span><div class="lnbox"><span class="lnum" id="lnum">—</span><button class="eye" id="eyebtn" onclick="toggleNum()">👁</button></div></div>
       <div class="lfoot"><span>✓ Valide <span id="lval">—</span></span><span>Canton de Vaud</span></div>
     </div>
-    <div class="shint">📡 Présente le code-barres au scanner</div>
+    <div class="shint">📡 Présente le code-barres au scanner de la bibliothèque</div>
     <div class="srow">
       <div class="sbox" onclick="allerVers('tous')"><div class="snum" id="stot">0</div><div class="slbl">Emprunts</div><div class="sarr">voir tous →</div></div>
       <div class="sbox" onclick="allerVers('retard')"><div class="snum" id="sov">0</div><div class="slbl">En retard</div><div class="sarr">voir →</div></div>
@@ -223,25 +225,24 @@ function openSetup(){
   }
 }
 function dessinerBarcode(code){
-  var cv=document.getElementById('bccanvas');if(!cv)return;
-  var ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
-  var s=String(code).toUpperCase(),seed=17;
-  for(var i=0;i<s.length;i++)seed=((seed<<5)-seed+s.charCodeAt(i))&0x7fffffff;
-  function rnd(){seed=(seed*1664525+1013904223)&0x7fffffff;return(seed>>>0)/2147483647;}
-  ctx.fillStyle='#111';
-  var bars=100,bw=W/bars;
-  for(var j=0;j<bars;j++){
-    var guard=j<3||j>bars-4||Math.abs(j-bars/2)<2;
-    var h=guard?H:H*(0.40+rnd()*0.52);
-    var on=guard?true:rnd()>0.43;
-    if(on){var w2=bw*(rnd()>0.58?2.0:1.0);ctx.fillRect(Math.floor(j*bw),0,Math.ceil(w2),Math.ceil(h));}
+  try{
+    JsBarcode('#bccanvas', code, {
+      format:'CODE128',
+      width:2,
+      height:60,
+      displayValue:true,
+      fontSize:13,
+      margin:6,
+      background:'#ffffff',
+      lineColor:'#111111'
+    });
+  }catch(e){
+    document.getElementById('bccanvas').innerHTML='<text x="50%" y="50%" text-anchor="middle" font-size="11" fill="#999">Code-barres indisponible</text>';
   }
 }
 function afficherCarte(){
   if(!card)return;
   dessinerBarcode(card.bc);
-  document.getElementById('bclbl').textContent=card.bc;
   document.getElementById('lholder').textContent=card.name||'';
   document.getElementById('lval').textContent=card.val||'—';
   document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
