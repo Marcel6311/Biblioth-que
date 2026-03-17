@@ -9,6 +9,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Ma Bibliothèque</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;--go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;--re:#d63031;--or:#e17055;--gr:#00b894;--sb:env(safe-area-inset-bottom,0px)}
@@ -126,7 +127,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .tbl{font-size:10px;font-family:sans-serif;color:var(--mu)}
 .tb.on .tbl{color:var(--br);font-weight:bold}
 .tbbdg{position:absolute;top:2px;right:calc(50% - 19px);background:var(--re);color:#fff;border-radius:10px;min-width:15px;height:15px;font-size:9px;display:none;align-items:center;justify-content:center;font-family:monospace;padding:0 3px}
-/* PLEIN ÉCRAN code-barres */
+/* Plein écran carte */
 #bcfullscreen{display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px}
 #bcfullscreen.on{display:flex}
 #bcfull{width:90vw}
@@ -134,10 +135,19 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .bcfcode{font-size:13px;font-family:monospace;color:#666;letter-spacing:2px}
 .bcfclose{padding:12px 32px;background:var(--br);color:var(--go);border:none;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
 .bcfhint{font-size:11px;color:#999;font-family:sans-serif;text-align:center}
+/* Scanner ISBN */
+#scanoverlay{display:none;position:fixed;inset:0;z-index:9500;background:#000;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:60px;gap:14px}
+#scanoverlay.on{display:flex}
+#scan-reader{width:100%;max-width:400px;border-radius:12px;overflow:hidden}
+.scan-title{color:#fff;font-size:17px;font-weight:bold;font-family:Georgia,serif}
+.scan-hint{color:#aaa;font-size:12px;font-family:sans-serif;text-align:center;padding:0 20px}
+.scan-close{padding:12px 32px;background:var(--re);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;font-family:sans-serif;margin-top:8px}
+#scanstatus{color:#f0c040;font-size:13px;font-family:sans-serif;text-align:center;min-height:20px}
+/* Bouton scanner */
+.scanbtn{width:100%;padding:12px;background:linear-gradient(135deg,#2c7a4a,#1a5c35);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;margin-bottom:11px;display:flex;align-items:center;justify-content:center;gap:8px}
 </style>
 </head>
 <body>
-
 <div id="setup">
   <div class="slogo">📚</div>
   <div class="stitle">Ma Bibliothèque</div>
@@ -152,7 +162,16 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
 
-<!-- PLEIN ÉCRAN pour scanner -->
+<!-- Scanner ISBN -->
+<div id="scanoverlay">
+  <div class="scan-title">📷 Scanner l'ISBN</div>
+  <div class="scan-hint">Pointe la caméra vers le code-barres au dos du livre</div>
+  <div id="scan-reader"></div>
+  <div id="scanstatus"></div>
+  <button class="scan-close" onclick="fermerScanner()">✕ Annuler</button>
+</div>
+
+<!-- Plein écran carte -->
 <div id="bcfullscreen" onclick="fermerPleinEcran()">
   <div class="bcfname" id="bcfname"></div>
   <svg id="bcfull"></svg>
@@ -203,6 +222,8 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   <div class="pg" id="pg-ajouter">
     <div class="ptit">Nouvel Emprunt</div>
     <div id="okmsg">✓ Livre ajouté !</div>
+    <button class="scanbtn" onclick="ouvrirScanner()">📷 Scanner l'ISBN du livre</button>
+    <div id="scanresult" style="display:none;background:#eafaf3;border:1px solid #00b894;border-radius:10px;padding:10px;margin-bottom:11px;font-family:sans-serif;font-size:12px;color:#006d4c;line-height:1.5"></div>
     <div class="fbox">
       <div class="fg"><label>Titre *</label><input type="text" id="ftit" placeholder="Titre du livre" oninput="chkForm()"></div>
       <div class="fg"><label>Auteur</label><input type="text" id="faut" placeholder="Prénom Nom"></div>
@@ -226,6 +247,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 <script>
 var KC='bib_card_v4',KB='bib_books_v4';
 var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
+var scanner=null,scannerActif=false;
 try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
 try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
 function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
@@ -249,44 +271,94 @@ function openSetup(){
     document.getElementById('subtn').disabled=false;
   }
 }
+
+/* ---- SCANNER ISBN ---- */
+function ouvrirScanner(){
+  document.getElementById('scanoverlay').classList.add('on');
+  document.getElementById('scanstatus').textContent='Initialisation…';
+  if(scanner){
+    scanner.clear().catch(function(){});
+    scanner=null;
+  }
+  scanner=new Html5Qrcode('scan-reader');
+  scanner.start(
+    {facingMode:'environment'},
+    {fps:10,qrbox:{width:280,height:120}},
+    function(code){
+      // ISBN trouvé
+      document.getElementById('scanstatus').textContent='✅ ISBN détecté : '+code;
+      fermerScanner();
+      rechercherISBN(code);
+    },
+    function(err){}
+  ).catch(function(err){
+    document.getElementById('scanstatus').textContent='⚠️ Caméra inaccessible : '+err;
+  });
+}
+function fermerScanner(){
+  document.getElementById('scanoverlay').classList.remove('on');
+  if(scanner&&scannerActif){
+    scanner.stop().then(function(){scanner.clear();scanner=null;scannerActif=false;}).catch(function(){scanner=null;scannerActif=false;});
+  } else if(scanner){
+    scanner.stop().catch(function(){});
+    scanner=null;
+  }
+}
+function rechercherISBN(isbn){
+  var r=document.getElementById('scanresult');
+  r.style.display='block';
+  r.textContent='🔍 Recherche en cours…';
+  document.getElementById('fisbn').value=isbn;
+  fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')
+    .then(function(res){return res.json();})
+    .then(function(data){
+      var key='ISBN:'+isbn;
+      if(!data[key]){
+        r.textContent='⚠️ Livre non trouvé dans la base. ISBN enregistré, complète manuellement.';
+        chkForm();
+        return;
+      }
+      var livre=data[key];
+      var titre=livre.title||'';
+      var auteurs='';
+      if(livre.authors&&livre.authors.length>0){
+        auteurs=livre.authors.map(function(a){return a.name;}).join(', ');
+      }
+      document.getElementById('ftit').value=titre;
+      document.getElementById('faut').value=auteurs;
+      r.innerHTML='✅ Livre trouvé !<br><strong>'+titre+'</strong>'+(auteurs?'<br>'+auteurs:'');
+      chkForm();
+    })
+    .catch(function(){
+      r.textContent='⚠️ Erreur réseau. ISBN enregistré, complète manuellement.';
+      chkForm();
+    });
+}
+
+/* ---- CARTE ---- */
 function dessinerBarcode(svgId,code){
   try{
-    JsBarcode('#'+svgId, code, {
-      format:'CODE128',
-      width:2.5,
-      height:80,
-      displayValue:true,
-      fontSize:14,
-      margin:8,
-      background:'#ffffff',
-      lineColor:'#000000'
-    });
+    JsBarcode('#'+svgId,code,{format:'CODE128',width:2.5,height:80,displayValue:true,fontSize:14,margin:8,background:'#ffffff',lineColor:'#000000'});
     document.getElementById(svgId).style.width='100%';
     document.getElementById(svgId).style.height='auto';
-  }catch(e){
-    console.log('Barcode error:',e);
-  }
+  }catch(e){}
 }
 function afficherCarte(){
   if(!card)return;
-  dessinerBarcode('bccanvas', card.bc);
+  dessinerBarcode('bccanvas',card.bc);
   document.getElementById('lholder').textContent=card.name||'';
   document.getElementById('lval').textContent=card.val||'—';
   document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
 }
 function ouvrirPleinEcran(){
   if(!card)return;
-  dessinerBarcode('bcfull', card.bc);
+  dessinerBarcode('bcfull',card.bc);
   document.getElementById('bcfname').textContent=card.name||'';
   document.getElementById('bcfcode').textContent=card.bc;
   document.getElementById('bcfullscreen').classList.add('on');
-  // Luminosité max si supporté
-  if(screen&&screen.orientation){}
   try{if(navigator.wakeLock)navigator.wakeLock.request('screen');}catch(e){}
 }
-function fermerPleinEcran(){
-  document.getElementById('bcfullscreen').classList.remove('on');
-}
+function fermerPleinEcran(){document.getElementById('bcfullscreen').classList.remove('on');}
 function masquer(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
 function toggleNum(){numVisible=!numVisible;document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);document.getElementById('eyebtn').textContent=numVisible?'🙈':'👁';}
 function joursRestants(due){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
@@ -331,7 +403,11 @@ function afficherPage(page){
   menuOuvert=null;editOuvert=null;
   if(page==='emprunts')afficherLivres();
   if(page==='carte'){afficherCarte();mettreAJourAlertes();}
-  if(page==='ajouter'){var f=document.getElementById('fbor');if(!f.value)f.value=new Date().toISOString().split('T')[0];}
+  if(page==='ajouter'){
+    var f=document.getElementById('fbor');
+    if(!f.value)f.value=new Date().toISOString().split('T')[0];
+    document.getElementById('scanresult').style.display='none';
+  }
 }
 function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);afficherLivres();}
 function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
@@ -429,6 +505,7 @@ function ajouterLivre(){
   books.unshift(livre);sauver();mettreAJourAlertes();
   document.getElementById('ftit').value='';document.getElementById('faut').value='';document.getElementById('fisbn').value='';document.getElementById('fdue').value='';
   document.getElementById('addbtn').disabled=true;
+  document.getElementById('scanresult').style.display='none';
   var msg=document.getElementById('okmsg');msg.style.display='block';
   setTimeout(function(){msg.style.display='none';allerVers('tous');},1200);
 }
