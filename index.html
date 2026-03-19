@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ma Bib">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Ma Bibliothèque</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;--go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;--re:#d63031;--or:#e17055;--gr:#00b894;--sb:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;background:#1a0a00}
+body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430px;margin:0 auto;background:var(--bg);height:100dvh}
+#setup{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#1a0a00,#3d1c00);display:flex;flex-direction:column;align-items:center;padding:36px 22px 28px;overflow-y:auto}
+#setup.off{display:none}
+.slogo{font-size:56px;margin-bottom:8px}
+.stitle{color:var(--go);font-size:22px;font-weight:bold;text-align:center}
+.ssub{color:#a07040;font-size:11px;font-family:sans-serif;letter-spacing:1px;margin-bottom:24px;text-align:center}
+.setupbox{background:rgba(255,255,255,0.05);border:1px solid rgba(200,147,58,0.3);border-radius:16px;padding:20px;width:100%;max-width:360px;margin-bottom:14px}
+.setupbox h3{color:var(--go);font-size:13px;font-family:sans-serif;margin-bottom:14px}
+.sf{margin-bottom:13px}
+.sf label{display:block;color:#a07040;font-size:10px;font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sf input{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid rgba(200,147,58,0.3);background:rgba(0,0,0,0.35);color:#fff;font-size:15px;font-family:monospace;letter-spacing:1px;outline:none}
+.sf input:focus{border-color:var(--go)}
+.sf input::placeholder{color:#604030;font-family:sans-serif;font-size:12px;letter-spacing:0}
+.snote{font-size:11px;color:#806040;font-family:sans-serif;margin-top:4px;line-height:1.4}
+#subtn{width:100%;max-width:360px;padding:14px;background:linear-gradient(135deg,var(--go),#a06820);color:#1a0a00;border:none;border-radius:14px;font-size:15px;font-weight:bold;font-family:Georgia,serif;cursor:pointer}
+#subtn:disabled{opacity:0.3;cursor:not-allowed}
+#hdr{background:linear-gradient(135deg,var(--br),var(--mi));padding:48px 15px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hl{display:flex;align-items:center;gap:9px}.hico{font-size:23px}
+.hnm{color:var(--go);font-size:15px;font-weight:bold}
+.hsb{color:#a07040;font-size:10px;font-family:sans-serif}
+.hr{display:flex;align-items:center;gap:7px}
+#apill{background:var(--re);color:#fff;border-radius:20px;padding:3px 8px;font-size:11px;font-weight:bold;font-family:sans-serif;display:none;align-items:center;gap:3px}
+#cfgbtn{background:rgba(255,255,255,0.12);border:none;color:var(--go);width:28px;height:28px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#astrip{background:#fff3cd;border-bottom:2px solid #f0c040;padding:7px 14px;display:none;flex-direction:column;gap:3px;flex-shrink:0}
+.ai{font-size:12px;color:#7a4f00;font-family:sans-serif}
+#scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(76px + var(--sb))}
+.pg{display:none;padding:15px}.pg.on{display:block}
+.ptit{font-size:17px;color:var(--br);font-weight:bold;border-bottom:2px solid var(--gl);padding-bottom:8px;margin-bottom:13px;display:flex;align-items:center;gap:8px}
+.pbdg{background:var(--br);color:var(--go);border-radius:20px;padding:1px 9px;font-size:12px}
+.lcard{background:linear-gradient(145deg,var(--br),var(--mi) 65%,#3a2000);border-radius:18px;padding:17px;margin-bottom:13px;box-shadow:0 8px 28px rgba(44,26,0,0.4)}
+.lhead{display:flex;align-items:center;gap:9px;margin-bottom:13px}
+.lhico{font-size:24px}
+.lhorg{color:var(--go);font-size:13px;font-weight:bold}
+.lhsub{color:#a07040;font-size:10px;font-family:sans-serif;margin-top:1px}
+.lsep{height:1px;background:rgba(200,147,58,0.2);margin-bottom:13px}
+.bcbox{background:#fff;border-radius:8px;padding:10px;margin-bottom:11px;display:flex;flex-direction:column;align-items:center}
+#bccanvas{width:100% !important;height:auto !important}
+.lholder{color:rgba(200,147,58,0.5);font-size:11px;font-family:sans-serif;text-align:right;margin-bottom:7px}
+.lrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.llbl{color:#a07040;font-size:10px;font-family:sans-serif}
+.lnbox{display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.28);border-radius:8px;padding:5px 10px}
+.lnum{color:var(--go);font-size:13px;font-family:monospace;letter-spacing:2px}
+.eye{background:none;border:none;font-size:14px;cursor:pointer;padding:0}
+.lfoot{display:flex;justify-content:space-between;border-top:1px solid rgba(200,147,58,0.2);padding-top:8px}
+.lfoot span{color:#a07040;font-size:10px;font-family:sans-serif}
+.shint{text-align:center;color:var(--mu);font-size:11px;margin-bottom:14px;font-family:sans-serif}
+.srow{display:flex;gap:9px}
+.sbox{flex:1;background:var(--w);border-radius:13px;padding:11px 6px 9px;text-align:center;border:1px solid var(--gl);cursor:pointer;transition:transform 0.1s;user-select:none;-webkit-user-select:none}
+.sbox:active{transform:scale(0.94)}
+.snum{font-size:24px;font-weight:bold;color:var(--br)}
+.slbl{font-size:10px;color:var(--mu);font-family:sans-serif;margin-top:2px}
+.sarr{font-size:9px;color:#cba870;font-family:sans-serif;margin-top:2px}
+.fbar{display:flex;gap:6px;margin-bottom:13px;flex-wrap:wrap}
+.fbtn{padding:5px 11px;border-radius:20px;border:1.5px solid var(--gl);background:var(--w);font-size:11px;font-family:sans-serif;color:var(--mu);cursor:pointer;transition:all 0.15s}
+.fbtn.on{background:var(--br);color:var(--go);border-color:var(--br);font-weight:bold}
+.grp{margin-bottom:16px}
+.ghd{font-size:11px;font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:1px;padding:5px 9px;border-radius:7px;margin-bottom:7px}
+.gov{background:#ffeaea;color:var(--re)}.gur{background:#fff4e0;color:#b35c00}.gok{background:#eafaf3;color:#006d4c}
+.book{background:var(--w);border-radius:13px;padding:11px;margin-bottom:8px;display:flex;gap:9px;border:1px solid var(--gl);box-shadow:0 2px 4px rgba(44,26,0,0.05);position:relative;flex-wrap:wrap}
+.book.ov{border-color:#fba5a5;background:#fff8f8}.book.ur{border-color:#ffd080}
+.bemo{font-size:27px;flex-shrink:0;align-self:flex-start;margin-top:1px}
+.binf{flex:1;min-width:0}
+.btit{font-size:13px;font-weight:bold;color:var(--br);margin-bottom:2px;line-height:1.3}
+.baut{font-size:11px;color:var(--mu);font-style:italic;margin-bottom:3px}
+.bisbn{font-size:10px;color:#bbb;font-family:monospace;margin-bottom:3px}
+.bbor{font-size:10px;color:#aaa;font-family:sans-serif;margin-bottom:4px}
+.bdue{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.bdul{font-size:11px;color:#666;font-family:sans-serif}
+.badge{border-radius:20px;padding:2px 7px;font-size:10px;font-family:sans-serif;font-weight:bold;color:#fff}
+.bov{background:var(--re)}.bur{background:var(--or)}.btd{background:#e17055}.bok{background:var(--gr)}
+.mbtn{background:none;border:none;cursor:pointer;color:#ccc;font-size:17px;padding:0 2px;align-self:flex-start;flex-shrink:0}
+.dmenu{width:100%;display:flex;gap:6px;margin-top:7px;padding-top:7px;border-top:1px solid #f0e0c0;flex-wrap:wrap}
+.dmod{flex:1;background:#e8d5b0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold}
+.dyes{flex:1;background:var(--re);color:#fff;border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
+.dno{flex:1;background:#f0e0c0;color:var(--br);border:none;border-radius:8px;padding:8px;font-size:12px;cursor:pointer;font-family:sans-serif}
+.editform{width:100%;margin-top:9px;padding-top:9px;border-top:2px solid var(--gl);display:none;flex-direction:column;gap:8px}
+.ef{display:flex;flex-direction:column;gap:3px}
+.ef label{font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px}
+.ef input{padding:8px 10px;border-radius:8px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none;width:100%}
+.ef input:focus{border-color:var(--go)}
+.efrow{display:flex;gap:7px}.efrow .ef{flex:1}
+.esave{width:100%;padding:9px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:9px;font-size:13px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
+.ecancel{width:100%;padding:8px;background:#f0e0c0;color:var(--br);border:none;border-radius:9px;font-size:12px;cursor:pointer;font-family:sans-serif;margin-top:3px}
+.empty{text-align:center;padding:34px 18px}
+.eico{font-size:44px;margin-bottom:9px}
+.etit{font-size:14px;color:var(--br);font-weight:bold;margin-bottom:4px}
+.esub{font-size:11px;color:var(--mu);font-family:sans-serif}
+.fbox{background:var(--w);border-radius:14px;padding:15px;border:1px solid var(--gl);margin-bottom:11px}
+.fg{margin-bottom:12px}
+.frow2{display:flex;gap:9px}.frow2 .fg{flex:1;margin-bottom:0}
+.fg label{display:block;font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.fg input{width:100%;padding:9px 10px;border-radius:9px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none;appearance:none}
+.fg input:focus{border-color:var(--go)}
+#addbtn{width:100%;padding:12px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;margin-top:5px}
+#addbtn:disabled{opacity:0.3;cursor:not-allowed}
+#okmsg{background:#d4edda;border:1px solid #c3e6cb;border-radius:9px;padding:10px;color:#155724;text-align:center;margin-bottom:11px;font-family:sans-serif;font-size:13px;display:none}
+.tip{background:#fff8e8;border:1px solid #f0c860;border-radius:11px;padding:12px}
+.tipt{font-size:12px;font-weight:bold;color:#7a4f00;margin-bottom:3px}
+.tipb{font-size:11px;color:#7a4f00;font-family:sans-serif;line-height:1.5}
+#tabs{position:fixed;bottom:0;left:0;right:0;max-width:430px;margin:0 auto;height:76px;background:rgba(250,246,240,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--gl);display:flex;padding-bottom:var(--sb);z-index:500}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;cursor:pointer;position:relative;padding-bottom:3px}
+.tbi{font-size:19px;transition:transform 0.1s}
+.tb.on .tbi{transform:scale(1.15)}
+.tbl{font-size:10px;font-family:sans-serif;color:var(--mu)}
+.tb.on .tbl{color:var(--br);font-weight:bold}
+.tbbdg{position:absolute;top:2px;right:calc(50% - 19px);background:var(--re);color:#fff;border-radius:10px;min-width:15px;height:15px;font-size:9px;display:none;align-items:center;justify-content:center;font-family:monospace;padding:0 3px}
+#bcfullscreen{display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#bcfullscreen.on{display:flex}
+#bcfull{width:90vw}
+.bcfname{font-size:15px;font-family:Georgia,serif;color:#333;font-weight:bold}
+.bcfcode{font-size:13px;font-family:monospace;color:#666;letter-spacing:2px}
+.bcfclose{padding:12px 32px;background:var(--br);color:var(--go);border:none;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
+.bcfhint{font-size:11px;color:#999;font-family:sans-serif;text-align:center}
+/* Scanner overlay - remplacé par scanner intégré dans l'onglet */
+#scanoverlay{display:none}
+/* ── SCANNER INTÉGRÉ (thème sombre dans l'onglet ajouter) ── */
+#scan-panel{background:#0a0a0a;border-radius:16px;overflow:hidden;margin-bottom:12px}
+.sc-isbn-bar{background:#131313;border-bottom:1px solid #242424;padding:9px 14px;display:flex;align-items:center;gap:9px}
+.sc-isbn-tag{font-family:monospace;font-size:9px;letter-spacing:.16em;color:#555;text-transform:uppercase;white-space:nowrap}
+.sc-isbn-led{width:7px;height:7px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s,box-shadow .3s}
+.sc-isbn-led.on{background:#00e87a;box-shadow:0 0 7px #00e87a;animation:scblink 1.2s ease-in-out infinite}
+@keyframes scblink{0%,100%{opacity:1}50%{opacity:.35}}
+.sc-isbn-val{font-family:monospace;font-size:16px;font-weight:700;letter-spacing:.1em;color:#00e87a;flex:1}
+.sc-isbn-val.empty{color:#2e2e2e}
+#sc-vwrap{display:none;position:relative;width:100%;background:#000}
+#sc-viewport{width:100%;position:relative}
+#sc-viewport video{width:100%;display:block;max-height:38vh;object-fit:cover}
+#sc-viewport canvas.drawingBuffer{display:none!important}
+.sc-ov{position:absolute;inset:0;pointer-events:none}
+.sc-corner{position:absolute;width:20px;height:20px;border-color:#00e87a;border-style:solid}
+.sc-c-tl{top:12%;left:7%;border-width:2px 0 0 2px}
+.sc-c-tr{top:12%;right:7%;border-width:2px 2px 0 0}
+.sc-c-bl{bottom:12%;left:7%;border-width:0 0 2px 2px}
+.sc-c-br{bottom:12%;right:7%;border-width:0 2px 2px 0}
+.sc-beam{position:absolute;left:7%;right:7%;height:2px;background:linear-gradient(90deg,transparent 0%,#00e87a 40%,#00e87a 60%,transparent 100%);box-shadow:0 0 10px #00e87a;animation:scbeam 2s ease-in-out infinite;top:15%}
+@keyframes scbeam{0%,100%{top:15%}50%{top:85%}}
+.sc-beam.paused{animation-play-state:paused}
+.sc-timer-wrap{position:absolute;top:8px;right:8px;width:48px;height:48px}
+.sc-timer-wrap svg{transform:rotate(-90deg)}
+.sc-t-track{fill:none;stroke:rgba(255,255,255,.12);stroke-width:3}
+.sc-t-prog{fill:none;stroke:#00e87a;stroke-width:3;stroke-linecap:round;stroke-dasharray:150.796;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .3s}
+.sc-t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:15px;font-weight:700;color:#f2f2f2}
+#sc-idle{padding:28px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.45}
+.sc-idle-txt{font-size:11px;letter-spacing:.1em;color:#555;font-family:sans-serif}
+.sc-ctrl{padding:12px 14px;display:flex;gap:9px}
+.sc-btn{border:none;cursor:pointer;font-family:sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border-radius:11px;padding:14px 18px;transition:transform .15s,opacity .15s}
+.sc-btn:active{transform:scale(.96);opacity:.85}
+.sc-btn-primary{flex:1;background:#00e87a;color:#000}
+.sc-btn-cancel{background:#ff3b3b;color:#fff;display:none}
+.sc-status{text-align:center;padding:3px 16px 12px;font-size:12px;letter-spacing:.05em;min-height:28px;font-family:sans-serif}
+.sc-status.scanning{color:#00e87a}.sc-status.timeout{color:#ffb700}.sc-status.muted{color:#555}
+.sc-manual-sep{display:flex;align-items:center;gap:8px;padding:0 14px 9px}
+.sc-sep-line{flex:1;height:1px;background:#242424}
+.sc-sep-txt{font-size:10px;letter-spacing:.12em;color:#555;text-transform:uppercase;font-family:sans-serif}
+.sc-manual-wrap{margin:0 14px 12px;display:flex;gap:8px;align-items:stretch}
+.sc-manual-input{flex:1;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 13px;font-family:monospace;font-size:16px;font-weight:600;letter-spacing:.1em;color:#f2f2f2;caret-color:#00e87a;outline:none;-webkit-appearance:none;transition:border-color .2s}
+.sc-manual-input::placeholder{color:#555;letter-spacing:.06em;font-size:13px}
+.sc-manual-input:focus{border-color:#00e87a}
+.sc-btn-search{flex-shrink:0;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#f2f2f2;transition:background .2s,border-color .2s}
+.sc-btn-search:active{transform:scale(.93)}
+#sc-loader{display:none;padding:24px;text-align:center;flex-direction:column;align-items:center;gap:12px}
+.sc-spinner{width:34px;height:34px;border:3px solid #2e2e2e;border-top-color:#00e87a;border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sc-loader-txt{font-size:11px;letter-spacing:.1em;color:#555;font-family:sans-serif}
+.sc-src-pills{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:3px}
+.sc-src-pill{font-size:9px;letter-spacing:.08em;font-family:monospace;padding:2px 8px;border-radius:20px;border:1px solid #2e2e2e;color:#555;transition:border-color .3s,color .3s}
+.sc-src-pill.active{border-color:#00e87a;color:#00e87a;animation:scpulse 1.2s ease-in-out infinite}
+@keyframes scpulse{0%,100%{opacity:1}50%{opacity:.35}}
+.sc-src-pill.found{border-color:#00e87a;color:#00e87a;opacity:.7;animation:none}
+.sc-src-pill.done{opacity:.35;animation:none}
+#sc-result{display:none;margin:4px 12px 12px;background:#131313;border:1px solid #2e2e2e;border-radius:13px;overflow:hidden}
+.sc-r-top{display:flex;gap:12px;padding:14px}
+.sc-r-cover{width:72px;height:100px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#2e2e2e}
+.sc-r-cover-ph{width:72px;height:100px;flex-shrink:0;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;display:none;align-items:center;justify-content:center}
+.sc-r-info{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
+.sc-r-title{font-size:16px;font-weight:700;line-height:1.2;color:#f2f2f2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.sc-r-author{font-size:13px;color:#00e87a;font-weight:600}
+.sc-r-meta{font-size:10px;font-family:monospace;color:#555;margin-top:auto}
+.sc-r-src{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#555;background:#1a1a1a;padding:2px 7px;border-radius:20px;border:1px solid #242424;margin-top:3px}
+.sc-r-src-dot{width:5px;height:5px;border-radius:50%;background:#00e87a}
+.sc-r-div{height:1px;background:#242424}
+.sc-r-summary{padding:11px 14px;font-size:12px;line-height:1.65;color:#aaa;font-family:Georgia,serif}
+.sc-r-summary.collapsed{max-height:70px;overflow:hidden}
+.sc-r-more{padding:5px 14px 10px;font-size:11px;color:#00e87a;cursor:pointer;letter-spacing:.04em;font-family:sans-serif}
+.sc-r-actions{padding:0 12px 12px;display:flex;gap:9px}
+.sc-btn-add{flex:1;background:#00e87a;color:#000;border:none;border-radius:10px;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:13px 9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .15s,background .3s}
+.sc-btn-add:active{transform:scale(.96)}
+.sc-btn-add.done{background:#2e2e2e;color:#555}
+.sc-btn-again{padding:13px 14px;background:transparent;color:#f2f2f2;border:1px solid #2e2e2e;border-radius:10px;font-family:sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:transform .15s}
+.sc-btn-again:active{transform:scale(.96)}
+#sc-errcard{display:none;margin:4px 12px 12px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.25);border-radius:13px;padding:20px;text-align:center}
+.sc-err-txt{font-size:13px;color:#ff8888;line-height:1.5;margin-bottom:14px;font-family:sans-serif}
+.sc-btn-retry{padding:10px 24px;background:#1a1a1a;color:#f2f2f2;border:1px solid #2e2e2e;border-radius:10px;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+/* Modal dates */
+#sc-date-modal{display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.75);align-items:flex-end;justify-content:center}
+#sc-date-modal.on{display:flex}
+.sc-modal-box{background:var(--w);border-radius:20px 20px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom,0px));width:100%;max-width:430px}
+.sc-modal-title{font-size:16px;font-weight:bold;color:var(--br);margin-bottom:4px}
+.sc-modal-sub{font-size:11px;color:var(--mu);font-family:sans-serif;margin-bottom:16px}
+.sc-modal-book{font-size:13px;color:var(--br);font-weight:bold;background:var(--bg);border-radius:9px;padding:9px 12px;margin-bottom:14px;font-family:Georgia,serif}
+.sc-modal-row{display:flex;gap:9px;margin-bottom:14px}
+.sc-modal-fg{flex:1}
+.sc-modal-fg label{display:block;font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.sc-modal-fg input{width:100%;padding:9px 10px;border-radius:9px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none}
+.sc-modal-fg input:focus{border-color:var(--go)}
+.sc-modal-btns{display:flex;gap:9px}
+.sc-modal-confirm{flex:1;padding:13px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
+.sc-modal-cancel{padding:13px 16px;background:#f0e0c0;color:var(--br);border:none;border-radius:11px;font-size:13px;cursor:pointer;font-family:sans-serif}
+/* Confirmation après ajout */
+#sc-modal-done{display:none;flex-direction:column;gap:10px}
+.sc-modal-done-msg{font-size:14px;font-weight:bold;color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:9px;padding:10px 14px;text-align:center;font-family:sans-serif}
+.sc-modal-cal-btn{width:100%;padding:13px;background:linear-gradient(135deg,#1a73e8,#0d5bba);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+.sc-modal-cal-btn:active{opacity:.85;transform:scale(.97)}
+.sc-modal-skip{width:100%;padding:11px;background:#f0e0c0;color:var(--br);border:none;border-radius:11px;font-size:13px;cursor:pointer;font-family:sans-serif}
+</style>
+</head>
+<body>
+
+<div id="setup">
+  <div class="slogo">📚</div>
+  <div class="stitle">Ma Bibliothèque</div>
+  <div class="ssub">LAUSANNE · RENOUVAUD</div>
+  <div class="setupbox">
+    <h3>🪪 Enregistre ta carte</h3>
+    <div class="sf"><label>Prénom et Nom</label><input type="text" id="sname" placeholder="ex: Marcel Mellier"></div>
+    <div class="sf"><label>Numéro de carte</label><input type="text" id="scard" placeholder="ex: BVL-23456789" oninput="chkSu()"><div class="snote">Tel qu'il figure sur ta carte physique</div></div>
+    <div class="sf"><label>Code-barres</label><input type="text" id="sbc" placeholder="ex: BVL23456789" oninput="this.value=this.value.toUpperCase();chkSu()"><div class="snote">Si identique au numéro, laisse vide.</div></div>
+    <div class="sf"><label>Validité (année)</label><input type="text" id="sval" placeholder="ex: 2027" inputmode="numeric" maxlength="4"></div>
+  </div>
+  <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
+</div>
+
+<!-- Modal dates d'emprunt -->
+<div id="sc-date-modal">
+  <div class="sc-modal-box">
+    <div class="sc-modal-title">📅 Dates d'emprunt</div>
+    <div class="sc-modal-sub" id="sc-modal-sub">Renseigne les dates pour ce livre</div>
+    <div class="sc-modal-book" id="sc-modal-book-title"></div>
+    <div class="sc-modal-row" id="sc-modal-row">
+      <div class="sc-modal-fg"><label>Emprunté le</label><input type="date" id="sc-modal-bor"></div>
+      <div class="sc-modal-fg"><label>À rendre le *</label><input type="date" id="sc-modal-due"></div>
+    </div>
+    <div class="sc-modal-btns" id="sc-modal-form-btns">
+      <button class="sc-modal-confirm" onclick="scModalConfirm()">✓ Ajouter</button>
+      <button class="sc-modal-cancel" onclick="scModalClose()">Annuler</button>
+    </div>
+    <!-- État après ajout -->
+    <div id="sc-modal-done">
+      <div class="sc-modal-done-msg">✅ Livre ajouté à vos emprunts !</div>
+      <button class="sc-modal-cal-btn" id="sc-cal-btn" onclick="scAddToCalendar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Ajouter à l'agenda
+      </button>
+      <button class="sc-modal-skip" onclick="scModalDone()">Plus tard</button>
+    </div>
+  </div>
+</div>
+
+<div id="bcfullscreen" onclick="fermerPleinEcran()">
+  <div class="bcfname" id="bcfname"></div>
+  <svg id="bcfull"></svg>
+  <div class="bcfcode" id="bcfcode"></div>
+  <div class="bcfhint">☀️ Luminosité max · Appuie pour fermer</div>
+  <button class="bcfclose" onclick="fermerPleinEcran()">Fermer</button>
+</div>
+
+<div id="hdr">
+  <div class="hl"><span class="hico">📚</span><div><div class="hnm">Ma Bibliothèque</div><div class="hsb">Bibliothèque de Lausanne</div></div></div>
+  <div class="hr"><div id="apill">⚠️ <span id="acount">0</span></div><button id="cfgbtn" onclick="openSetup()">⚙️</button></div>
+</div>
+<div id="astrip"><div id="aov" class="ai"></div><div id="aug" class="ai"></div></div>
+
+<div id="scroll">
+  <div class="pg" id="pg-carte">
+    <div class="ptit">Ma Carte de Membre</div>
+    <div class="lcard">
+      <div class="lhead"><span class="lhico">📚</span><div><div class="lhorg">Bibliothèque de Lausanne</div><div class="lhsub">Réseau des bibliothèques vaudoises · RENOUVAUD</div></div></div>
+      <div class="lsep"></div>
+      <div class="bcbox" onclick="ouvrirPleinEcran()" style="cursor:pointer">
+        <svg id="bccanvas"></svg>
+        <div style="font-size:10px;color:#aaa;font-family:sans-serif;margin-top:4px">👆 Appuie pour agrandir</div>
+      </div>
+      <div class="lholder" id="lholder"></div>
+      <div class="lrow"><span class="llbl">N° DE CARTE</span><div class="lnbox"><span class="lnum" id="lnum">—</span><button class="eye" id="eyebtn" onclick="toggleNum()">👁</button></div></div>
+      <div class="lfoot"><span>✓ Valide <span id="lval">—</span></span><span>Canton de Vaud</span></div>
+    </div>
+    <div class="shint">📡 Appuie sur le code-barres pour l'agrandir · Luminosité max</div>
+    <div class="srow">
+      <div class="sbox" onclick="allerVers('tous')"><div class="snum" id="stot">0</div><div class="slbl">Emprunts</div><div class="sarr">voir tous →</div></div>
+      <div class="sbox" onclick="allerVers('retard')"><div class="snum" id="sov">0</div><div class="slbl">En retard</div><div class="sarr">voir →</div></div>
+      <div class="sbox" onclick="allerVers('urgent')"><div class="snum" id="sug">0</div><div class="slbl">Urgents</div><div class="sarr">voir →</div></div>
+    </div>
+  </div>
+
+  <div class="pg on" id="pg-emprunts">
+    <div class="ptit">Mes Emprunts <span class="pbdg" id="lcount">0</span></div>
+    <div class="fbar">
+      <button class="fbtn on" id="fb-tous"   onclick="changerFiltre('tous')">Tous</button>
+      <button class="fbtn"    id="fb-retard" onclick="changerFiltre('retard')">🔴 En retard</button>
+      <button class="fbtn"    id="fb-urgent" onclick="changerFiltre('urgent')">🟡 Urgents</button>
+      <button class="fbtn"    id="fb-ok"     onclick="changerFiltre('ok')">🟢 En cours</button>
+    </div>
+    <div id="llist"></div>
+  </div>
+
+  <div class="pg" id="pg-ajouter">
+    <div class="ptit">Scanner un livre</div>
+    <div id="okmsg">✓ Livre ajouté !</div>
+
+    <!-- ══ SCANNER PANEL ══════════════════════════════════ -->
+    <div id="scan-panel">
+
+      <!-- ISBN permanent -->
+      <div class="sc-isbn-bar">
+        <span class="sc-isbn-tag">ISBN</span>
+        <div class="sc-isbn-led" id="sc-led"></div>
+        <span class="sc-isbn-val empty" id="sc-isbnVal">— — — — — — — — — — — — —</span>
+      </div>
+
+      <!-- Viewport caméra -->
+      <div id="sc-vwrap">
+        <div id="sc-viewport"></div>
+        <div class="sc-ov">
+          <div class="sc-corner sc-c-tl"></div>
+          <div class="sc-corner sc-c-tr"></div>
+          <div class="sc-corner sc-c-bl"></div>
+          <div class="sc-corner sc-c-br"></div>
+          <div class="sc-beam" id="sc-beam"></div>
+          <div class="sc-timer-wrap">
+            <svg width="48" height="48" viewBox="0 0 54 54">
+              <circle class="sc-t-track" cx="27" cy="27" r="24"/>
+              <circle class="sc-t-prog" id="sc-tprog" cx="27" cy="27" r="24"/>
+            </svg>
+            <div class="sc-t-num" id="sc-tnum">8</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Idle -->
+      <div id="sc-idle">
+        <svg width="60" height="60" viewBox="0 0 72 72" fill="none">
+          <rect x="8" y="16" width="56" height="40" rx="4" stroke="#444" stroke-width="1.5"/>
+          <line x1="19" y1="16" x2="19" y2="56" stroke="#444" stroke-width="4"/>
+          <line x1="27" y1="16" x2="27" y2="56" stroke="#444" stroke-width="1.5"/>
+          <line x1="33" y1="16" x2="33" y2="56" stroke="#333" stroke-width="3"/>
+          <line x1="40" y1="16" x2="40" y2="56" stroke="#444" stroke-width="1.5"/>
+          <line x1="46" y1="16" x2="46" y2="56" stroke="#444" stroke-width="2.5"/>
+          <line x1="52" y1="16" x2="52" y2="56" stroke="#444" stroke-width="1.5"/>
+          <line x1="8" y1="63" x2="64" y2="63" stroke="#00e87a" stroke-width="2" opacity=".45"/>
+        </svg>
+        <div class="sc-idle-txt">Prêt à scanner</div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="sc-ctrl">
+        <button class="sc-btn sc-btn-primary" id="sc-btnStart" onclick="scStartScan()">📷 &nbsp;Scanner un livre</button>
+        <button class="sc-btn sc-btn-cancel"  id="sc-btnCancel" onclick="scCancelScan()">✕ &nbsp;Annuler</button>
+      </div>
+      <div class="sc-status muted" id="sc-status">Pointez la caméra vers le code-barres ISBN</div>
+
+      <!-- Saisie manuelle -->
+      <div class="sc-manual-sep">
+        <div class="sc-sep-line"></div>
+        <span class="sc-sep-txt">ou saisie manuelle</span>
+        <div class="sc-sep-line"></div>
+      </div>
+      <div class="sc-manual-wrap">
+        <input class="sc-manual-input" id="sc-manualISBN" type="tel" inputmode="numeric" pattern="[0-9]*"
+          placeholder="ex. 9782381950587" maxlength="17" autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') scSearchManual()">
+        <button class="sc-btn-search" onclick="scSearchManual()" title="Rechercher">
+          <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Loader -->
+      <div id="sc-loader">
+        <div class="sc-spinner"></div>
+        <div class="sc-loader-txt">Consultation de 4 sources en parallèle…</div>
+        <div class="sc-src-pills">
+          <div class="sc-src-pill" id="sc-pill-google">Google Books</div>
+          <div class="sc-src-pill" id="sc-pill-open">Open Library</div>
+          <div class="sc-src-pill" id="sc-pill-inv">Inventaire.io</div>
+          <div class="sc-src-pill" id="sc-pill-bnf">BnF</div>
+        </div>
+      </div>
+
+      <!-- Résultat -->
+      <div id="sc-result">
+        <div class="sc-r-top">
+          <img class="sc-r-cover" id="sc-rCover" src="" alt="Couverture"
+            onerror="this.style.display='none';document.getElementById('sc-rCoverPh').style.display='flex'">
+          <div class="sc-r-cover-ph" id="sc-rCoverPh">
+            <svg width="26" height="26" fill="#444" viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h12V4H6zm2 2h8v2H8V6zm0 4h6v2H8v-2z"/></svg>
+          </div>
+          <div class="sc-r-info">
+            <div class="sc-r-title" id="sc-rTitle"></div>
+            <div class="sc-r-author" id="sc-rAuthor"></div>
+            <div class="sc-r-meta" id="sc-rMeta"></div>
+            <div class="sc-r-src" id="sc-rSrc"><div class="sc-r-src-dot"></div><span id="sc-rSrcTxt"></span></div>
+          </div>
+        </div>
+        <div class="sc-r-div"></div>
+        <div class="sc-r-summary collapsed" id="sc-rSummary"></div>
+        <div class="sc-r-more" id="sc-rMore" onclick="scToggleSummary()">▼ Voir le résumé</div>
+        <div class="sc-r-actions">
+          <button class="sc-btn-add" id="sc-btnAdd" onclick="scOpenDateModal()">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            Ajouter à ma bibliothèque
+          </button>
+          <button class="sc-btn-again" onclick="scResetScanner()" title="Nouveau scan">↺</button>
+        </div>
+      </div>
+
+      <!-- Erreur -->
+      <div id="sc-errcard">
+        <div style="font-size:26px;margin-bottom:8px">⚠️</div>
+        <div class="sc-err-txt" id="sc-errTxt"></div>
+        <button class="sc-btn-retry" onclick="scResetScanner()">Réessayer</button>
+      </div>
+
+    </div><!-- /#scan-panel -->
+
+    <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
+  </div>
+</div>
+
+<div id="tabs">
+  <button class="tb"    id="tb-carte"    onclick="afficherPage('carte')"><span class="tbi">🪪</span><span class="tbl">Carte</span></button>
+  <button class="tb on" id="tb-emprunts" onclick="afficherPage('emprunts')"><span class="tbi">📚</span><span class="tbl">Emprunts</span><span class="tbbdg" id="tbbdg"></span></button>
+  <button class="tb"    id="tb-ajouter"  onclick="afficherPage('ajouter')"><span class="tbi">➕</span><span class="tbl">Ajouter</span></button>
+  <button class="tb" onclick="window.open('https://bavl.lausanne.ch/iguana/www.main.cls','_blank')"><span class="tbi">🌐</span><span class="tbl">BIB/LS</span></button>
+</div>
+
+<script>
+var KC='bib_card_v4',KB='bib_books_v4';
+var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
+try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
+try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
+function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
+function chkSu(){document.getElementById('subtn').disabled=document.getElementById('scard').value.trim().length<3;}
+function doSetup(){
+  var name=document.getElementById('sname').value.trim();
+  var num=document.getElementById('scard').value.trim();
+  var bcv=document.getElementById('sbc').value.trim().toUpperCase();
+  card={name:name,num:num,bc:bcv||num.toUpperCase(),val:document.getElementById('sval').value.trim()||'2027'};
+  sauver();document.getElementById('setup').classList.add('off');demarrer();
+}
+function openSetup(){
+  document.getElementById('setup').classList.remove('off');
+  if(card){
+    document.getElementById('sname').value=card.name||'';
+    document.getElementById('scard').value=card.num||'';
+    document.getElementById('sbc').value=card.bc||'';
+    document.getElementById('sval').value=card.val||'';
+    document.getElementById('subtn').disabled=false;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   SCANNER COMPLET (Quagga + 4 sources parallèles)
+══════════════════════════════════════════════════════ */
+var SC_DURATION = 8;
+var SC_CIRC     = 2 * Math.PI * 24;
+var scScanning  = false, scQuaggaLive = false;
+var scScanTimer = null, scTickInterval = null;
+var scCurrentISBN = '', scCurrentBook = null, scSummaryOpen = false;
+
+/* ── Timer ── */
+function scStartTimer(){
+  var s=SC_DURATION;
+  var prog=document.getElementById('sc-tprog');
+  var num=document.getElementById('sc-tnum');
+  prog.style.stroke='#00e87a'; prog.style.strokeDashoffset='0'; num.textContent=s;
+  scTickInterval=setInterval(function(){
+    s--; num.textContent=s;
+    prog.style.strokeDashoffset=SC_CIRC*(1-s/SC_DURATION);
+    if(s<=3)prog.style.stroke='#ff3b3b';
+    if(s<=0)clearInterval(scTickInterval);
+  },1000);
+}
+function scStopTimer(){clearInterval(scTickInterval);scTickInterval=null;}
+
+/* ── Démarrer scan ── */
+function scStartScan(){
+  scResetUI(); scScanning=true;
+  document.getElementById('sc-vwrap').style.display='block';
+  document.getElementById('sc-idle').style.display='none';
+  document.getElementById('sc-btnStart').style.display='none';
+  document.getElementById('sc-btnCancel').style.display='block';
+  document.getElementById('sc-led').classList.add('on');
+  scSetStatus('Scan en cours… pointez vers le code-barres','scanning');
+  scStartTimer();
+  scScanTimer=setTimeout(function(){
+    if(scScanning&&!scCurrentISBN){
+      scStopScan();
+      scSetStatus('Aucun code-barres détecté — réessayez','timeout');
+      document.getElementById('sc-idle').style.display='flex';
+      document.getElementById('sc-btnStart').style.display='block';
+    }
+  },SC_DURATION*1000);
+  Quagga.init({
+    inputStream:{type:'LiveStream',target:document.getElementById('sc-viewport'),
+      constraints:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}},
+    locator:{patchSize:'medium',halfSample:true},
+    numOfWorkers:2,frequency:10,
+    decoder:{readers:['ean_reader','ean_8_reader']},
+    locate:true
+  },function(err){
+    if(err){scStopScan();scShowError("Impossible d'accéder à la caméra.\nVérifiez les autorisations dans Réglages > Safari.");return;}
+    scQuaggaLive=true; Quagga.start();
+  });
+  Quagga.onDetected(scOnDetected);
+}
+function scOnDetected(result){
+  if(!scScanning)return;
+  var code=result.codeResult.code;
+  if(!code||code.length<10)return;
+  scStopScan(); scSetISBN(code); scFetchBook(code);
+}
+function scStopScan(){
+  scScanning=false; clearTimeout(scScanTimer); scStopTimer();
+  document.getElementById('sc-led').classList.remove('on');
+  document.getElementById('sc-btnCancel').style.display='none';
+  document.getElementById('sc-beam').classList.add('paused');
+  if(scQuaggaLive){try{Quagga.offDetected(scOnDetected);Quagga.stop();}catch(e){}scQuaggaLive=false;}
+  setTimeout(function(){document.getElementById('sc-vwrap').style.display='none';},250);
+}
+function scCancelScan(){scStopScan();scResetScanner();}
+
+/* ── ISBN display ── */
+function scSetISBN(isbn){
+  scCurrentISBN=isbn;
+  var el=document.getElementById('sc-isbnVal');
+  el.textContent=isbn; el.classList.remove('empty');
+}
+function scClearISBN(){
+  scCurrentISBN='';
+  var el=document.getElementById('sc-isbnVal');
+  el.textContent='— — — — — — — — — — — — —'; el.classList.add('empty');
+}
+
+/* ── 4 Sources Parallèles — BnF prioritaire ── */
+function scScoreBook(b){
+  if(!b)return -1; var s=0;
+  if(b.title&&b.title!=='Titre inconnu')s+=2;
+  if(b.author&&b.author!=='Auteur inconnu')s+=2;
+  if(b.summary&&b.summary.length>40)s+=4;
+  if(b.cover)s+=3; if(b.publisher)s+=1; if(b.year)s+=1; if(b.pages)s+=1;
+  // BnF prioritaire : bonus important si elle a trouvé un résultat valide
+  if(b.source==='BnF'&&b.title&&b.title!=='Titre inconnu')s+=10;
+  return s;
+}
+function scMergeBooks(results){
+  var sorted=results.filter(Boolean).sort(function(a,b){return scScoreBook(b)-scScoreBook(a);});
+  if(!sorted.length)return null;
+  var best=Object.assign({},sorted[0]);
+  for(var i=1;i<sorted.length;i++){
+    var r=sorted[i];
+    if(!best.summary&&r.summary)best.summary=r.summary;
+    if(!best.cover&&r.cover)best.cover=r.cover;
+    if(!best.publisher&&r.publisher)best.publisher=r.publisher;
+    if(!best.year&&r.year)best.year=r.year;
+    if(!best.pages&&r.pages)best.pages=r.pages;
+  }
+  best.sourceAll=[...new Set(sorted.map(function(r){return r.source;}))];
+  best.source=sorted[0].source;
+  return best;
+}
+function scPill(id,state){var el=document.getElementById('sc-pill-'+id);if(el)el.className='sc-src-pill '+state;}
+
+function scFetchGoogle(isbn){
+  return fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+isbn)
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d.items||!d.items.length)return null;
+      var v=d.items[0].volumeInfo;
+      return{title:v.title||'Titre inconnu',author:(v.authors||['Auteur inconnu']).join(', '),publisher:v.publisher||'',year:(v.publishedDate||'').substring(0,4),pages:v.pageCount||'',summary:v.description||'',cover:((v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail))||'').replace('http:','https:'),isbn:isbn,source:'Google Books'};
+    });
+}
+function scFetchOpenLib(isbn){
+  return fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')
+    .then(function(r){return r.json();}).then(function(d){
+      var info=d['ISBN:'+isbn];if(!info)return null;
+      var cover=info.cover?(info.cover.large||info.cover.medium||info.cover.small||''):'';
+      var summary=typeof info.notes==='string'?info.notes:(info.notes&&info.notes.value)||(info.excerpts&&info.excerpts[0]&&info.excerpts[0].text)||'';
+      return{title:info.title||'Titre inconnu',author:(info.authors||[]).map(function(a){return a.name;}).join(', ')||'Auteur inconnu',publisher:(info.publishers||[]).map(function(p){return p.name;}).join(', '),year:(info.publish_date&&(info.publish_date.match(/\d{4}/)||[])[0])||'',pages:info.number_of_pages||'',summary:summary,cover:cover,isbn:isbn,source:'Open Library'};
+    });
+}
+function scFetchInventaire(isbn){
+  return fetch('https://inventaire.io/api/entities?action=by-uris&uris=isbn:'+isbn)
+    .then(function(r){return r.json();}).then(function(d){
+      var entity=d.entities&&d.entities['isbn:'+isbn];if(!entity)return null;
+      var labels=entity.labels||{};var title=labels.fr||labels.en||Object.values(labels)[0]||'';
+      if(!title)return null;
+      var descs=entity.descriptions||{};var summary=descs.fr||descs.en||Object.values(descs)[0]||'';
+      var cover=entity.image&&entity.image.url?(entity.image.url.startsWith('http')?entity.image.url:'https://inventaire.io'+entity.image.url):'';
+      var claims=entity.claims||{};
+      var year='';var dv=claims['wdt:P577']&&claims['wdt:P577'][0];if(dv)year=String(dv).substring(0,4);
+      var pages=claims['wdt:P1104']&&claims['wdt:P1104'][0]||'';
+      var authorUris=(claims['wdt:P50']||[]).slice(0,2);
+      var ap=authorUris.length?
+        fetch('https://inventaire.io/api/entities?action=by-uris&uris='+encodeURIComponent(authorUris.join('|')))
+          .then(function(r){return r.json();}).then(function(ad){
+            var names=authorUris.map(function(u){var e=ad.entities&&ad.entities[u];if(!e)return null;var l=e.labels||{};return l.fr||l.en||Object.values(l)[0]||null;}).filter(Boolean);
+            return names.join(', ')||'Auteur inconnu';
+          }).catch(function(){return'Auteur inconnu';})
+        :Promise.resolve('Auteur inconnu');
+      return ap.then(function(author){return{title:title,author:author,publisher:'',year:year,pages:pages,summary:summary,cover:cover,isbn:isbn,source:'Inventaire.io'};});
+    });
+}
+function scFetchBnf(isbn){
+  var url='https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn+adj+"'+isbn+'"&recordSchema=dublincore&maximumRecords=1';
+  return fetch(url).then(function(r){return r.text();}).then(function(txt){
+    var parser=new DOMParser();var xml=parser.parseFromString(txt,'application/xml');
+    var records=xml.getElementsByTagNameNS('*','record');if(!records.length)return null;
+    var DC='http://purl.org/dc/elements/1.1/';
+    function dc(tag){var els=xml.getElementsByTagNameNS(DC,tag);return els.length?els[0].textContent.trim():'';}
+    function dcAll(tag){return Array.from(xml.getElementsByTagNameNS(DC,tag)).map(function(e){return e.textContent.trim();}).filter(Boolean);}
+    var title=dc('title');if(!title)return null;
+    var creators=dcAll('creator').map(function(c){return c.replace(/\s*\(\d{4}[-–]\d*\)\s*$/,'').trim();});
+    var author=creators.join(', ')||'Auteur inconnu';
+    var pubRaw=dc('publisher');
+    var publisher=pubRaw.includes(':')?pubRaw.split(':').slice(1).join(':').trim():pubRaw;
+    var year=(dc('date').match(/\d{4}/)||[])[0]||'';
+    var summary=dcAll('description').find(function(d){return d.length>30;})||'';
+    return{title:title,author:author,publisher:publisher,year:year,pages:'',summary:summary,cover:'',isbn:isbn,source:'BnF'};
+  });
+}
+
+function scFetchBook(isbn){
+  scSetStatus('','');
+  scShowLoader(true);
+  scPill('google','active');scPill('open','active');scPill('inv','active');scPill('bnf','active');
+  var wrap=function(p,id){return p.then(function(b){scPill(id,b?'found':'done');return b;}).catch(function(){scPill(id,'done');return null;});};
+  Promise.all([
+    wrap(scFetchGoogle(isbn),'google'),
+    wrap(scFetchOpenLib(isbn),'open'),
+    wrap(scFetchInventaire(isbn),'inv'),
+    wrap(scFetchBnf(isbn),'bnf')
+  ]).then(function(results){
+    var merged=scMergeBooks(results.filter(Boolean));
+    scShowLoader(false);
+    if(merged){scCurrentBook=merged;scShowResult(merged);}
+    else{scShowError('Aucun livre trouvé pour l\'ISBN '+isbn+'.\nVérifiez que c\'est bien un code-barres de livre.');}
+  }).catch(function(){scShowLoader(false);scShowError('Erreur réseau — réessayez.');});
+}
+
+/* ── UI ── */
+function scShowLoader(on){
+  document.getElementById('sc-loader').style.display=on?'flex':'none';
+  document.getElementById('sc-result').style.display='none';
+  document.getElementById('sc-errcard').style.display='none';
+  document.getElementById('sc-idle').style.display='none';
+  if(!on)document.getElementById('sc-btnStart').style.display='block';
+}
+function scShowResult(b){
+  scShowLoader(false);
+  document.getElementById('sc-rTitle').textContent=b.title;
+  document.getElementById('sc-rAuthor').textContent=b.author;
+  var parts=[];if(b.year)parts.push(b.year);if(b.pages)parts.push(b.pages+' p.');if(b.publisher)parts.push(b.publisher);
+  document.getElementById('sc-rMeta').textContent=parts.join(' · ');
+  var srcTxt=document.getElementById('sc-rSrcTxt');
+  srcTxt.textContent=b.sourceAll&&b.sourceAll.length>1?b.source+' +'+(b.sourceAll.length-1):b.source;
+  var img=document.getElementById('sc-rCover'),ph=document.getElementById('sc-rCoverPh');
+  if(b.cover){img.src=b.cover;img.style.display='block';ph.style.display='none';}
+  else{img.style.display='none';ph.style.display='flex';}
+  var sumEl=document.getElementById('sc-rSummary'),moreEl=document.getElementById('sc-rMore');
+  scSummaryOpen=false;
+  if(b.summary){sumEl.textContent=b.summary;sumEl.classList.add('collapsed');moreEl.style.display='block';moreEl.textContent='▼ Voir le résumé';}
+  else{sumEl.textContent='Aucun résumé disponible.';sumEl.classList.remove('collapsed');moreEl.style.display='none';}
+  var btnAdd=document.getElementById('sc-btnAdd');
+  btnAdd.classList.remove('done');
+  btnAdd.innerHTML='<svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg> Ajouter à ma bibliothèque';
+  document.getElementById('sc-result').style.display='block';
+  document.getElementById('sc-btnStart').style.display='block';
+}
+function scShowError(msg){
+  document.getElementById('sc-errTxt').textContent=msg;
+  document.getElementById('sc-errcard').style.display='block';
+  document.getElementById('sc-idle').style.display='none';
+  document.getElementById('sc-btnStart').style.display='block';
+}
+function scSetStatus(msg,cls){
+  var el=document.getElementById('sc-status');el.textContent=msg;el.className='sc-status '+(cls||'muted');
+}
+function scToggleSummary(){
+  scSummaryOpen=!scSummaryOpen;
+  var s=document.getElementById('sc-rSummary'),m=document.getElementById('sc-rMore');
+  if(scSummaryOpen){s.classList.remove('collapsed');m.textContent='▲ Réduire';}
+  else{s.classList.add('collapsed');m.textContent='▼ Voir le résumé';}
+}
+function scResetUI(){
+  document.getElementById('sc-result').style.display='none';
+  document.getElementById('sc-errcard').style.display='none';
+  document.getElementById('sc-loader').style.display='none';
+  document.getElementById('sc-beam').classList.remove('paused');
+  document.getElementById('sc-tprog').style.stroke='#00e87a';
+  scCurrentBook=null;
+}
+function scResetScanner(){
+  scResetUI(); scClearISBN();
+  document.getElementById('sc-manualISBN').value='';
+  document.getElementById('sc-vwrap').style.display='none';
+  document.getElementById('sc-idle').style.display='flex';
+  document.getElementById('sc-btnStart').style.display='block';
+  document.getElementById('sc-btnCancel').style.display='none';
+  scSetStatus('Pointez la caméra vers le code-barres ISBN','muted');
+}
+function scSearchManual(){
+  var raw=document.getElementById('sc-manualISBN').value.replace(/[\s\-]/g,'');
+  if(!raw){scShowToast('⚠️ Saisissez un ISBN');return;}
+  if(raw.length<10){scShowToast('⚠️ ISBN trop court');return;}
+  if(raw.length>13){scShowToast('⚠️ ISBN trop long');return;}
+  if(!/^\d+$/.test(raw)){scShowToast('⚠️ Chiffres uniquement');return;}
+  scResetUI(); scSetISBN(raw);
+  document.getElementById('sc-idle').style.display='none';
+  scFetchBook(raw);
+}
+
+/* ── Modal dates ── */
+var scLastLivre = null;
+var scModalData  = null; // données du livre capturées à l'ouverture du modal
+
+function scOpenDateModal(){
+  if(!scCurrentBook)return;
+  // Capturer immédiatement toutes les données nécessaires
+  scModalData = {
+    title:  scCurrentBook.title,
+    author: scCurrentBook.author,
+    isbn:   scCurrentBook.isbn,
+    cover:  scCurrentBook.cover || ''
+  };
+  document.getElementById('sc-modal-book-title').textContent=scModalData.title;
+  var today=new Date().toISOString().split('T')[0];
+  var due=new Date();due.setDate(due.getDate()+28);
+  document.getElementById('sc-modal-bor').value=today;
+  document.getElementById('sc-modal-due').value=due.toISOString().split('T')[0];
+  // Réinitialiser l'état du modal
+  document.getElementById('sc-modal-form-btns').style.display='flex';
+  document.getElementById('sc-modal-done').style.display='none';
+  document.getElementById('sc-modal-row').style.display='flex';
+  document.getElementById('sc-modal-sub').textContent='Renseigne les dates pour ce livre';
+  document.getElementById('sc-date-modal').classList.add('on');
+}
+function scModalClose(){
+  document.getElementById('sc-date-modal').classList.remove('on');
+}
+function scModalConfirm(){
+  if(!scModalData){scShowToast('⚠️ Aucun livre sélectionné');return;}
+  var due=document.getElementById('sc-modal-due').value;
+  if(!due){scShowToast('⚠️ Date de retour requise');return;}
+  var coverVal=scModalData.cover&&scModalData.cover.startsWith('http')
+    ?scModalData.cover
+    :CVR[Math.floor(Math.random()*CVR.length)];
+  scLastLivre={
+    id:      Date.now(),
+    title:   scModalData.title,
+    author:  scModalData.author,
+    isbn:    scModalData.isbn,
+    borrowed:document.getElementById('sc-modal-bor').value,
+    due:     due,
+    cover:   coverVal
+  };
+  if(scModalData.isbn&&books.some(function(b){return b.isbn&&b.isbn===scModalData.isbn;})){
+    scModalClose();scShowToast('📚 Déjà dans vos emprunts');return;
+  }
+  books.unshift(scLastLivre);sauver();mettreAJourAlertes();
+  // Passer à l'étape agenda
+  document.getElementById('sc-modal-form-btns').style.display='none';
+  document.getElementById('sc-modal-row').style.display='none';
+  document.getElementById('sc-modal-sub').textContent='Veux-tu ajouter la date de retour à ton agenda ?';
+  document.getElementById('sc-modal-done').style.display='flex';
+  var btnAdd=document.getElementById('sc-btnAdd');
+  if(btnAdd){btnAdd.classList.add('done');btnAdd.innerHTML='✓ &nbsp;Ajouté !';}
+}
+function scAddToCalendar(){
+  if(!scLastLivre)return;
+  var due=scLastLivre.due; // YYYY-MM-DD
+  var duePlus1=new Date(due);duePlus1.setDate(duePlus1.getDate()+1);
+  var duePlus1Str=duePlus1.toISOString().split('T')[0];
+  // Format ICS date journée entière : YYYYMMDD
+  var dtStart=due.replace(/-/g,'');
+  var dtEnd=duePlus1Str.replace(/-/g,'');
+  var now=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15);
+  var uid=Math.random().toString(36).substr(2,9)+'@mabib.ch';
+  var summary='📚 Retour : '+scLastLivre.title+(scLastLivre.author?' — '+scLastLivre.author:'');
+  var desc='Livre emprunté à la Bibliothèque de Lausanne'
+    +(scLastLivre.author?'\\nAuteur : '+scLastLivre.author:'')
+    +(scLastLivre.isbn?'\\nISBN : '+scLastLivre.isbn:'')
+    +'\\nEmprunté le : '+scLastLivre.borrowed;
+  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Ma Bibliothèque//FR\r\nCALSCALE:GREGORIAN\r\n';
+  ics+='BEGIN:VEVENT\r\n';
+  ics+='UID:'+uid+'\r\n';
+  ics+='DTSTAMP:'+now+'Z\r\n';
+  ics+='DTSTART;VALUE=DATE:'+dtStart+'\r\n';
+  ics+='DTEND;VALUE=DATE:'+dtEnd+'\r\n';
+  ics+='SUMMARY:'+summary.replace(/,/g,'\\,')+'\r\n';
+  ics+='DESCRIPTION:'+desc+'\r\n';
+  ics+='LOCATION:Bibliothèque de Lausanne\r\n';
+  ics+='BEGIN:VALARM\r\nTRIGGER:-PT12H\r\nACTION:DISPLAY\r\nDESCRIPTION:Rappel retour livre demain !\r\nEND:VALARM\r\n';
+  ics+='END:VEVENT\r\nEND:VCALENDAR';
+  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download=(scLastLivre.title||'retour').replace(/[^a-z0-9]/gi,'_')+'.ics';
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+  scModalDone();
+}
+function scModalDone(){
+  scModalClose();
+  var msg=document.getElementById('okmsg');msg.style.display='block';
+  setTimeout(function(){msg.style.display='none';allerVers('tous');scResetScanner();},1200);
+}
+
+/* ── Toast ── */
+function scShowToast(msg){
+  var t=document.getElementById('sc-toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},2800);
+}
+
+/* ══════════════════════════════════════════════════════
+   BIBLIOTHÈQUE (inchangé)
+══════════════════════════════════════════════════════ */
+function dessinerBarcode(svgId,code){
+  try{JsBarcode('#'+svgId,code,{format:'CODE128',width:2.5,height:80,displayValue:true,fontSize:14,margin:8,background:'#ffffff',lineColor:'#000000'});document.getElementById(svgId).style.width='100%';document.getElementById(svgId).style.height='auto';}catch(e){}
+}
+function afficherCarte(){
+  if(!card)return;
+  dessinerBarcode('bccanvas',card.bc);
+  document.getElementById('lholder').textContent=card.name||'';
+  document.getElementById('lval').textContent=card.val||'—';
+  document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);
+}
+function ouvrirPleinEcran(){
+  if(!card)return;
+  dessinerBarcode('bcfull',card.bc);
+  document.getElementById('bcfname').textContent=card.name||'';
+  document.getElementById('bcfcode').textContent=card.bc;
+  document.getElementById('bcfullscreen').classList.add('on');
+  try{if(navigator.wakeLock)navigator.wakeLock.request('screen');}catch(e){}
+}
+function fermerPleinEcran(){document.getElementById('bcfullscreen').classList.remove('on');}
+function masquer(n){if(!n||n.length<3)return n||'—';return n.slice(0,2)+'•'.repeat(n.length-3)+n.slice(-1);}
+function toggleNum(){numVisible=!numVisible;document.getElementById('lnum').textContent=numVisible?card.num:masquer(card.num);document.getElementById('eyebtn').textContent=numVisible?'🙈':'👁';}
+function joursRestants(due){var t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(due)-t)/86400000);}
+function formaterDate(d){return new Date(d).toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});}
+function faireBadge(d){
+  if(d<0)return'<span class="badge bov">Retard '+Math.abs(d)+'j</span>';
+  if(d===0)return'<span class="badge btd">Aujourd\'hui !</span>';
+  if(d<=3)return'<span class="badge bur">'+d+'j restants</span>';
+  return'<span class="badge bok">'+d+'j restants</span>';
+}
+function echapper(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+var CVR=['📕','📗','📘','📙','📒','📓','📔'];
+function mettreAJourAlertes(){
+  var ov=books.filter(function(b){return joursRestants(b.due)<0;});
+  var ug=books.filter(function(b){var d=joursRestants(b.due);return d>=0&&d<=3;});
+  var tot=ov.length+ug.length;
+  document.getElementById('apill').style.display=tot?'flex':'none';
+  document.getElementById('acount').textContent=tot;
+  document.getElementById('astrip').style.display=tot?'flex':'none';
+  var ao=document.getElementById('aov'),au=document.getElementById('aug');
+  ao.style.display=ov.length?'block':'none';au.style.display=ug.length?'block':'none';
+  if(ov.length)ao.textContent='⚠️ '+ov.length+' livre'+(ov.length>1?'s':'')+' EN RETARD — des frais s\'appliquent !';
+  if(ug.length)au.textContent='🕐 '+ug.length+' livre'+(ug.length>1?'s':'')+' à rendre très prochainement';
+  var bdg=document.getElementById('tbbdg');
+  bdg.textContent=tot||'';bdg.style.display=tot?'flex':'none';
+  document.getElementById('stot').textContent=books.length;
+  var elOv=document.getElementById('sov');elOv.textContent=ov.length;elOv.style.color=ov.length?'var(--re)':'var(--gr)';
+  var elUg=document.getElementById('sug');elUg.textContent=ug.length;elUg.style.color=ug.length?'var(--or)':'var(--br)';
+  document.getElementById('lcount').textContent=books.length;
+}
+function afficherPage(page){
+  ['carte','emprunts','ajouter'].forEach(function(p){
+    document.getElementById('pg-'+p).classList.remove('on');
+    document.getElementById('tb-'+p).classList.remove('on');
+  });
+  document.getElementById('pg-'+page).classList.add('on');
+  document.getElementById('tb-'+page).classList.add('on');
+  document.getElementById('scroll').scrollTop=0;
+  menuOuvert=null;editOuvert=null;
+  if(page==='emprunts')afficherLivres();
+  if(page==='carte'){afficherCarte();mettreAJourAlertes();}
+}
+function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);afficherLivres();}
+function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
+function activerFiltre(f){['tous','retard','urgent','ok'].forEach(function(k){var b=document.getElementById('fb-'+k);if(b)b.classList.toggle('on',k===f);});}
+function afficherLivres(){
+  var list=document.getElementById('llist');
+  var src=books.slice();
+  if(filtre==='retard')src=src.filter(function(b){return joursRestants(b.due)<0;});
+  if(filtre==='urgent')src=src.filter(function(b){var d=joursRestants(b.due);return d>=0&&d<=3;});
+  if(filtre==='ok')src=src.filter(function(b){return joursRestants(b.due)>3;});
+  if(!src.length){
+    var M={tous:['📭','Aucun emprunt',"Utilise l'onglet ➕"],retard:['✅','Aucun retard','Tout est dans les temps !'],urgent:['👌','Aucun urgent','Rien à rendre dans 3 jours'],ok:['📖','Aucun emprunt en cours','']};
+    var m=M[filtre]||M.tous;
+    list.innerHTML='<div class="empty"><div class="eico">'+m[0]+'</div><div class="etit">'+m[1]+'</div><div class="esub">'+m[2]+'</div></div>';return;
+  }
+  var ov=src.filter(function(b){return joursRestants(b.due)<0;}).sort(function(a,b){return joursRestants(a.due)-joursRestants(b.due);});
+  var ug=src.filter(function(b){var d=joursRestants(b.due);return d>=0&&d<=3;}).sort(function(a,b){return joursRestants(a.due)-joursRestants(b.due);});
+  var ok=src.filter(function(b){return joursRestants(b.due)>3;}).sort(function(a,b){return joursRestants(a.due)-joursRestants(b.due);});
+  var html='';
+  if(ov.length)html+=faireGroupe('gov','🔴 En retard ('+ov.length+')',ov);
+  if(ug.length)html+=faireGroupe('gur','🟡 À rendre bientôt ('+ug.length+')',ug);
+  if(ok.length)html+=faireGroupe('gok','🟢 En cours ('+ok.length+')',ok);
+  list.innerHTML=html;
+}
+function faireGroupe(cls,label,liste){
+  var html='<div class="grp"><div class="ghd '+cls+'">'+label+'</div>';
+  for(var i=0;i<liste.length;i++)html+=faireLivre(liste[i]);
+  return html+'</div>';
+}
+function faireLivre(b){
+  var d=joursRestants(b.due),cls=d<0?' ov':d<=3?' ur':'';
+  var coverHtml=b.cover&&b.cover.startsWith('http')?
+    '<img src="'+echapper(b.cover)+'" style="width:38px;height:54px;object-fit:cover;border-radius:5px;flex-shrink:0;align-self:flex-start;margin-top:1px;border:1px solid #e0c8a0" onerror="this.outerHTML=\'<span class=\\\"bemo\\\">📕</span>\'" alt="">':
+    '<span class="bemo">'+echapper(b.cover||'📕')+'</span>';
+  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+coverHtml+
+    '<div class="binf">'+
+      '<div class="btit">'+echapper(b.title)+'</div>'+
+      (b.author?'<div class="baut">'+echapper(b.author)+'</div>':'')+
+      (b.isbn?'<div class="bisbn">ISBN : '+echapper(b.isbn)+'</div>':'')+
+      '<div class="bbor">📅 Emprunté le '+formaterDate(b.borrowed)+'</div>'+
+      '<div class="bdue"><span class="bdul">↩ '+formaterDate(b.due)+'</span>'+faireBadge(d)+'</div>'+
+    '</div>'+
+    '<button class="mbtn" onclick="toggleMenu('+b.id+')">···</button>'+
+    '<div class="dmenu" id="dm-'+b.id+'" style="display:none">'+
+      '<button class="dmod" onclick="ouvrirEdit('+b.id+')">✏️ Modifier</button>'+
+      '<button class="dyes" onclick="supprimerLivre('+b.id+')">🗑 Rendu</button>'+
+      '<button class="dno"  onclick="toggleMenu('+b.id+')">Annuler</button>'+
+    '</div>'+
+    '<div class="editform" id="ef-'+b.id+'">'+
+      '<div class="ef"><label>Titre</label><input type="text" id="ef-tit-'+b.id+'" value="'+echapper(b.title)+'"></div>'+
+      '<div class="ef"><label>Auteur</label><input type="text" id="ef-aut-'+b.id+'" value="'+echapper(b.author||'')+'"></div>'+
+      '<div class="ef"><label>ISBN</label><input type="text" id="ef-isbn-'+b.id+'" value="'+echapper(b.isbn||'')+'" inputmode="numeric"></div>'+
+      '<div class="efrow">'+
+        '<div class="ef"><label>Emprunté le</label><input type="date" id="ef-bor-'+b.id+'" value="'+b.borrowed+'"></div>'+
+        '<div class="ef"><label>À rendre le</label><input type="date" id="ef-due-'+b.id+'" value="'+b.due+'"></div>'+
+      '</div>'+
+      '<button class="esave" onclick="sauverEdit('+b.id+')">✓ Enregistrer</button>'+
+      '<button class="ecancel" onclick="fermerEdit('+b.id+')">Annuler</button>'+
+    '</div>'+
+  '</div>';
+}
+function toggleMenu(id){
+  if(menuOuvert&&menuOuvert!==id){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';}
+  var m=document.getElementById('dm-'+id);if(!m)return;
+  var v=m.style.display!=='none';m.style.display=v?'none':'flex';menuOuvert=v?null:id;
+}
+function ouvrirEdit(id){
+  if(menuOuvert){var p=document.getElementById('dm-'+menuOuvert);if(p)p.style.display='none';menuOuvert=null;}
+  if(editOuvert&&editOuvert!==id){var e=document.getElementById('ef-'+editOuvert);if(e)e.style.display='none';}
+  var ef=document.getElementById('ef-'+id);if(!ef)return;
+  ef.style.display='flex';editOuvert=id;
+  setTimeout(function(){var t=document.getElementById('ef-tit-'+id);if(t)t.focus();},100);
+}
+function fermerEdit(id){var ef=document.getElementById('ef-'+id);if(ef)ef.style.display='none';editOuvert=null;}
+function sauverEdit(id){
+  var tit=document.getElementById('ef-tit-'+id).value.trim();if(!tit)return;
+  for(var i=0;i<books.length;i++){
+    if(books[i].id===id){
+      books[i].title=tit;
+      books[i].author=document.getElementById('ef-aut-'+id).value.trim();
+      books[i].isbn=document.getElementById('ef-isbn-'+id).value.trim();
+      books[i].borrowed=document.getElementById('ef-bor-'+id).value;
+      books[i].due=document.getElementById('ef-due-'+id).value;
+      break;
+    }
+  }
+  sauver();mettreAJourAlertes();afficherLivres();editOuvert=null;
+}
+function supprimerLivre(id){books=books.filter(function(b){return b.id!==id;});sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;}
+function demarrer(){afficherCarte();afficherLivres();mettreAJourAlertes();}
+window.addEventListener('load',function(){
+  if(!card){}else{document.getElementById('setup').classList.add('off');demarrer();}
+  scResetScanner();
+});
+</script>
+
+<!-- Toast global -->
+<div style="position:fixed;bottom:calc(env(safe-area-inset-bottom,12px) + 18px);left:50%;transform:translateX(-50%) translateY(70px);background:#00e87a;color:#000;padding:10px 20px;border-radius:100px;font-family:sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;pointer-events:none" id="sc-toast"></div>
+</body>
+</html>
