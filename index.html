@@ -645,6 +645,15 @@ function scFetchBnf(isbn){
   });
 }
 
+function scFetchUpc(isbn){
+  return fetch('https://api.upcitemdb.com/prod/trial/lookup?upc='+isbn)
+    .then(function(r){return r.json();}).then(function(d){
+      if(!d.items||!d.items.length)return null;
+      var item=d.items[0];
+      var title=item.title||'';if(!title)return null;
+      return{title:title,author:item.brand||'',publisher:'',year:'',pages:'',summary:item.description||'',cover:(item.images&&item.images[0])||'',isbn:isbn,source:'UPC Item DB'};
+    });
+}
 function scFetchBook(isbn){
   scSetStatus('','');
   scShowLoader(true);
@@ -659,7 +668,13 @@ function scFetchBook(isbn){
     var merged=scMergeBooks(results.filter(Boolean));
     scShowLoader(false);
     if(merged){scCurrentBook=merged;scShowResult(merged);}
-    else{scShowError('Aucun livre trouvé pour l\'ISBN '+isbn+'.\nVérifiez que c\'est bien un code-barres de livre.');}
+    else{
+      // Fallback DVD/Blu-ray via UPC Item DB
+      scFetchUpc(isbn).then(function(item){
+        if(item){scCurrentBook=item;scShowResult(item);}
+        else{scShowError('Aucun résultat pour '+isbn+'.\nVérifiez le code-barres.');}
+      }).catch(function(){scShowError('Aucun résultat pour '+isbn+'.\nVérifiez le code-barres.');});
+    }
   }).catch(function(){scShowLoader(false);scShowError('Erreur réseau — réessayez.');});
 }
 
