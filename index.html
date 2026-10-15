@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Ma Bibliothèque</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--bg:#faf6f0;--w:#fff;--br:#2c1a00;--mi:#4a2c00;--go:#c8933a;--gl:#e8d5b0;--mu:#8a6a40;--re:#d63031;--or:#e17055;--gr:#00b894;--sb:env(safe-area-inset-bottom,0px)}
@@ -127,107 +127,18 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 .bcfcode{font-size:13px;font-family:monospace;color:#666;letter-spacing:2px}
 .bcfclose{padding:12px 32px;background:var(--br);color:var(--go);border:none;border-radius:12px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
 .bcfhint{font-size:11px;color:#999;font-family:sans-serif;text-align:center}
-/* Scanner overlay - remplacé par scanner intégré dans l'onglet */
-#scanoverlay{display:none}
-/* ── SCANNER INTÉGRÉ (thème sombre dans l'onglet ajouter) ── */
-#scan-panel{background:#0a0a0a;border-radius:16px;overflow:hidden;margin-bottom:12px}
-.sc-isbn-bar{background:#131313;border-bottom:1px solid #242424;padding:9px 14px;display:flex;align-items:center;gap:9px}
-.sc-isbn-tag{font-family:monospace;font-size:9px;letter-spacing:.16em;color:#555;text-transform:uppercase;white-space:nowrap}
-.sc-isbn-led{width:7px;height:7px;border-radius:50%;background:#555;flex-shrink:0;transition:background .3s,box-shadow .3s}
-.sc-isbn-led.on{background:#00e87a;box-shadow:0 0 7px #00e87a;animation:scblink 1.2s ease-in-out infinite}
-@keyframes scblink{0%,100%{opacity:1}50%{opacity:.35}}
-.sc-isbn-val{font-family:monospace;font-size:16px;font-weight:700;letter-spacing:.1em;color:#00e87a;flex:1}
-.sc-isbn-val.empty{color:#2e2e2e}
-#sc-vwrap{display:none;position:relative;width:100%;background:#000}
-#sc-viewport{width:100%;position:relative}
-#sc-viewport video{width:100%;display:block;max-height:38vh;object-fit:cover}
-#sc-viewport canvas.drawingBuffer{display:none!important}
-.sc-ov{position:absolute;inset:0;pointer-events:none}
-.sc-corner{position:absolute;width:20px;height:20px;border-color:#00e87a;border-style:solid}
-.sc-c-tl{top:12%;left:7%;border-width:2px 0 0 2px}
-.sc-c-tr{top:12%;right:7%;border-width:2px 2px 0 0}
-.sc-c-bl{bottom:12%;left:7%;border-width:0 0 2px 2px}
-.sc-c-br{bottom:12%;right:7%;border-width:0 2px 2px 0}
-.sc-beam{position:absolute;left:7%;right:7%;height:2px;background:linear-gradient(90deg,transparent 0%,#00e87a 40%,#00e87a 60%,transparent 100%);box-shadow:0 0 10px #00e87a;animation:scbeam 2s ease-in-out infinite;top:15%}
-@keyframes scbeam{0%,100%{top:15%}50%{top:85%}}
-.sc-beam.paused{animation-play-state:paused}
-.sc-timer-wrap{position:absolute;top:8px;right:8px;width:48px;height:48px}
-.sc-timer-wrap svg{transform:rotate(-90deg)}
-.sc-t-track{fill:none;stroke:rgba(255,255,255,.12);stroke-width:3}
-.sc-t-prog{fill:none;stroke:#00e87a;stroke-width:3;stroke-linecap:round;stroke-dasharray:150.796;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear,stroke .3s}
-.sc-t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:15px;font-weight:700;color:#f2f2f2}
-#sc-idle{padding:28px 16px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;opacity:.45}
-.sc-idle-txt{font-size:11px;letter-spacing:.1em;color:#555;font-family:sans-serif}
-.sc-ctrl{padding:12px 14px;display:flex;gap:9px}
-.sc-btn{border:none;cursor:pointer;font-family:sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;text-transform:uppercase;border-radius:11px;padding:14px 18px;transition:transform .15s,opacity .15s}
-.sc-btn:active{transform:scale(.96);opacity:.85}
-.sc-btn-primary{flex:1;background:#00e87a;color:#000}
-.sc-btn-cancel{background:#ff3b3b;color:#fff;display:none}
-.sc-status{text-align:center;padding:3px 16px 12px;font-size:12px;letter-spacing:.05em;min-height:28px;font-family:sans-serif}
-.sc-status.scanning{color:#00e87a}.sc-status.timeout{color:#ffb700}.sc-status.muted{color:#555}
-.sc-manual-sep{display:flex;align-items:center;gap:8px;padding:0 14px 9px}
-.sc-sep-line{flex:1;height:1px;background:#242424}
-.sc-sep-txt{font-size:10px;letter-spacing:.12em;color:#555;text-transform:uppercase;font-family:sans-serif}
-.sc-manual-wrap{margin:0 14px 12px;display:flex;gap:8px;align-items:stretch}
-.sc-manual-input{flex:1;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 13px;font-family:monospace;font-size:16px;font-weight:600;letter-spacing:.1em;color:#f2f2f2;caret-color:#00e87a;outline:none;-webkit-appearance:none;transition:border-color .2s}
-.sc-manual-input::placeholder{color:#555;letter-spacing:.06em;font-size:13px}
-.sc-manual-input:focus{border-color:#00e87a}
-.sc-btn-search{flex-shrink:0;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:10px;padding:12px 15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#f2f2f2;transition:background .2s,border-color .2s}
-.sc-btn-search:active{transform:scale(.93)}
-#sc-loader{display:none;padding:24px;text-align:center;flex-direction:column;align-items:center;gap:12px}
-.sc-spinner{width:34px;height:34px;border:3px solid #2e2e2e;border-top-color:#00e87a;border-radius:50%;animation:spin .75s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.sc-loader-txt{font-size:11px;letter-spacing:.1em;color:#555;font-family:sans-serif}
-.sc-src-pills{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:3px}
-.sc-src-pill{font-size:9px;letter-spacing:.08em;font-family:monospace;padding:2px 8px;border-radius:20px;border:1px solid #2e2e2e;color:#555;transition:border-color .3s,color .3s}
-.sc-src-pill.active{border-color:#00e87a;color:#00e87a;animation:scpulse 1.2s ease-in-out infinite}
-@keyframes scpulse{0%,100%{opacity:1}50%{opacity:.35}}
-.sc-src-pill.found{border-color:#00e87a;color:#00e87a;opacity:.7;animation:none}
-.sc-src-pill.done{opacity:.35;animation:none}
-#sc-result{display:none;margin:4px 12px 12px;background:#131313;border:1px solid #2e2e2e;border-radius:13px;overflow:hidden}
-.sc-r-top{display:flex;gap:12px;padding:14px}
-.sc-r-cover{width:72px;height:100px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#2e2e2e}
-.sc-r-cover-ph{width:72px;height:100px;flex-shrink:0;background:#1a1a1a;border:1px solid #2e2e2e;border-radius:6px;display:none;align-items:center;justify-content:center}
-.sc-r-info{flex:1;display:flex;flex-direction:column;gap:4px;min-width:0}
-.sc-r-title{font-size:16px;font-weight:700;line-height:1.2;color:#f2f2f2;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.sc-r-author{font-size:13px;color:#00e87a;font-weight:600}
-.sc-r-meta{font-size:10px;font-family:monospace;color:#555;margin-top:auto}
-.sc-r-src{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#555;background:#1a1a1a;padding:2px 7px;border-radius:20px;border:1px solid #242424;margin-top:3px}
-.sc-r-src-dot{width:5px;height:5px;border-radius:50%;background:#00e87a}
-.sc-r-div{height:1px;background:#242424}
-.sc-r-summary{padding:11px 14px;font-size:12px;line-height:1.65;color:#aaa;font-family:Georgia,serif}
-.sc-r-summary.collapsed{max-height:70px;overflow:hidden}
-.sc-r-more{padding:5px 14px 10px;font-size:11px;color:#00e87a;cursor:pointer;letter-spacing:.04em;font-family:sans-serif}
-.sc-r-actions{padding:0 12px 12px;display:flex;gap:9px}
-.sc-btn-add{flex:1;background:#00e87a;color:#000;border:none;border-radius:10px;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:13px 9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:transform .15s,background .3s}
-.sc-btn-add:active{transform:scale(.96)}
-.sc-btn-add.done{background:#2e2e2e;color:#555}
-.sc-btn-again{padding:13px 14px;background:transparent;color:#f2f2f2;border:1px solid #2e2e2e;border-radius:10px;font-family:sans-serif;font-size:17px;font-weight:700;cursor:pointer;transition:transform .15s}
-.sc-btn-again:active{transform:scale(.96)}
-#sc-errcard{display:none;margin:4px 12px 12px;background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.25);border-radius:13px;padding:20px;text-align:center}
-.sc-err-txt{font-size:13px;color:#ff8888;line-height:1.5;margin-bottom:14px;font-family:sans-serif}
-.sc-btn-retry{padding:10px 24px;background:#1a1a1a;color:#f2f2f2;border:1px solid #2e2e2e;border-radius:10px;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
-/* Modal dates */
-#sc-date-modal{display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.75);align-items:flex-end;justify-content:center}
-#sc-date-modal.on{display:flex}
-.sc-modal-box{background:var(--w);border-radius:20px 20px 0 0;padding:22px 18px calc(18px + env(safe-area-inset-bottom,0px));width:100%;max-width:430px}
-.sc-modal-title{font-size:16px;font-weight:bold;color:var(--br);margin-bottom:4px}
-.sc-modal-sub{font-size:11px;color:var(--mu);font-family:sans-serif;margin-bottom:16px}
-.sc-modal-book{font-size:13px;color:var(--br);font-weight:bold;background:var(--bg);border-radius:9px;padding:9px 12px;margin-bottom:14px;font-family:Georgia,serif}
-.sc-modal-row{display:flex;gap:9px;margin-bottom:14px}
-.sc-modal-fg{flex:1}
-.sc-modal-fg label{display:block;font-size:10px;color:var(--mu);font-family:sans-serif;font-weight:bold;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.sc-modal-fg input{width:100%;padding:9px 10px;border-radius:9px;border:1.5px solid #e0c8a0;background:var(--bg);font-size:13px;color:var(--br);font-family:Georgia,serif;outline:none;-webkit-appearance:none}
-.sc-modal-fg input:focus{border-color:var(--go)}
-.sc-modal-btns{display:flex;gap:9px}
-.sc-modal-confirm{flex:1;padding:13px;background:linear-gradient(135deg,var(--br),var(--mi));color:var(--go);border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:Georgia,serif}
-.sc-modal-cancel{padding:13px 16px;background:#f0e0c0;color:var(--br);border:none;border-radius:11px;font-size:13px;cursor:pointer;font-family:sans-serif}
-/* Confirmation après ajout */
-#sc-modal-done{display:none;flex-direction:column;gap:10px}
-.sc-modal-done-msg{font-size:14px;font-weight:bold;color:#155724;background:#d4edda;border:1px solid #c3e6cb;border-radius:9px;padding:10px 14px;text-align:center;font-family:sans-serif}
-.sc-modal-cal-btn{width:100%;padding:13px;background:linear-gradient(135deg,#1a73e8,#0d5bba);color:#fff;border:none;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer;font-family:sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
-.sc-modal-cal-btn:active{opacity:.85;transform:scale(.97)}
-.sc-modal-skip{width:100%;padding:11px;background:#f0e0c0;color:var(--br);border:none;border-radius:11px;font-size:13px;cursor:pointer;font-family:sans-serif}
+/* Scanner overlay */
+#scanoverlay{display:none;position:fixed;inset:0;z-index:9500;background:#000;flex-direction:column;align-items:center}
+#scanoverlay.on{display:flex}
+#qr-reader{width:100%;max-width:430px}
+#qr-reader video{object-fit:cover}
+.scan-ui{position:relative;z-index:2;width:100%;display:flex;flex-direction:column;align-items:center;padding:16px;gap:10px}
+.scan-title{color:#fff;font-size:17px;font-weight:bold;font-family:Georgia,serif;text-shadow:0 1px 4px #000}
+.scan-hint{color:#ddd;font-size:12px;font-family:sans-serif;text-align:center;text-shadow:0 1px 3px #000}
+.scan-close{width:calc(100% - 32px);padding:14px;background:rgba(200,40,40,0.92);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:bold;cursor:pointer;font-family:sans-serif;margin:8px 16px}
+.scanbtn{width:100%;padding:13px;background:linear-gradient(135deg,#1a6b3a,#0d4a26);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Georgia,serif;margin-bottom:11px;display:flex;align-items:center;justify-content:center;gap:8px}
+#scanresult{display:none;background:#eafaf3;border:1px solid #00b894;border-radius:10px;padding:11px;margin-bottom:11px;font-family:sans-serif;font-size:13px;color:#006d4c;line-height:1.6}
+#scanresult.err{background:#ffeaea;border-color:#d63031;color:#922020}
 </style>
 </head>
 <body>
@@ -246,30 +157,14 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   <button id="subtn" onclick="doSetup()" disabled>Enregistrer ma carte →</button>
 </div>
 
-<!-- Modal dates d'emprunt -->
-<div id="sc-date-modal">
-  <div class="sc-modal-box">
-    <div class="sc-modal-title">📅 Dates d'emprunt</div>
-    <div class="sc-modal-sub" id="sc-modal-sub">Renseigne les dates pour ce livre</div>
-    <div class="sc-modal-book" id="sc-modal-book-title"></div>
-    <div class="sc-modal-row" id="sc-modal-row">
-      <div class="sc-modal-fg"><label>Emprunté le</label><input type="date" id="sc-modal-bor"></div>
-      <div class="sc-modal-fg"><label>À rendre le *</label><input type="date" id="sc-modal-due"></div>
-    </div>
-    <div class="sc-modal-btns" id="sc-modal-form-btns">
-      <button class="sc-modal-confirm" onclick="scModalConfirm()">✓ Ajouter</button>
-      <button class="sc-modal-cancel" onclick="scModalClose()">Annuler</button>
-    </div>
-    <!-- État après ajout -->
-    <div id="sc-modal-done">
-      <div class="sc-modal-done-msg">✅ Livre ajouté à vos emprunts !</div>
-      <button class="sc-modal-cal-btn" id="sc-cal-btn" onclick="scAddToCalendar()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        Ajouter à l'agenda
-      </button>
-      <button class="sc-modal-skip" onclick="scModalDone()">Plus tard</button>
-    </div>
+<!-- Scanner html5-qrcode -->
+<div id="scanoverlay">
+  <div class="scan-ui">
+    <div class="scan-title">📷 Scanner l'ISBN</div>
+    <div class="scan-hint">Centre le code-barres dans le cadre</div>
   </div>
+  <div id="qr-reader"></div>
+  <button class="scan-close" onclick="fermerScanner()">✕ Annuler</button>
 </div>
 
 <div id="bcfullscreen" onclick="fermerPleinEcran()">
@@ -320,125 +215,20 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
   </div>
 
   <div class="pg" id="pg-ajouter">
-    <div class="ptit">Scanner un livre</div>
+    <div class="ptit">Nouvel Emprunt</div>
     <div id="okmsg">✓ Livre ajouté !</div>
-
-    <!-- ══ SCANNER PANEL ══════════════════════════════════ -->
-    <div id="scan-panel">
-
-      <!-- ISBN permanent -->
-      <div class="sc-isbn-bar">
-        <span class="sc-isbn-tag">ISBN</span>
-        <div class="sc-isbn-led" id="sc-led"></div>
-        <span class="sc-isbn-val empty" id="sc-isbnVal">— — — — — — — — — — — — —</span>
+    <button class="scanbtn" onclick="ouvrirScanner()">📷 Scanner l'ISBN du livre</button>
+    <div id="scanresult"></div>
+    <div class="fbox">
+      <div class="fg"><label>ISBN — saisie auto du titre</label><input type="text" id="fisbn" placeholder="9782…" inputmode="numeric" onchange="chkIsbn(this.value)"></div>
+      <div class="fg"><label>Titre *</label><input type="text" id="ftit" placeholder="Titre du livre" oninput="chkForm()"></div>
+      <div class="fg"><label>Auteur</label><input type="text" id="faut" placeholder="Prénom Nom"></div>
+      <div class="frow2">
+        <div class="fg"><label>Emprunté le *</label><input type="date" id="fbor" oninput="chkForm()"></div>
+        <div class="fg"><label>À rendre le *</label><input type="date" id="fdue" oninput="chkForm()"></div>
       </div>
-
-      <!-- Viewport caméra -->
-      <div id="sc-vwrap">
-        <div id="sc-viewport"></div>
-        <div class="sc-ov">
-          <div class="sc-corner sc-c-tl"></div>
-          <div class="sc-corner sc-c-tr"></div>
-          <div class="sc-corner sc-c-bl"></div>
-          <div class="sc-corner sc-c-br"></div>
-          <div class="sc-beam" id="sc-beam"></div>
-          <div class="sc-timer-wrap">
-            <svg width="48" height="48" viewBox="0 0 54 54">
-              <circle class="sc-t-track" cx="27" cy="27" r="24"/>
-              <circle class="sc-t-prog" id="sc-tprog" cx="27" cy="27" r="24"/>
-            </svg>
-            <div class="sc-t-num" id="sc-tnum">8</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Idle -->
-      <div id="sc-idle">
-        <svg width="60" height="60" viewBox="0 0 72 72" fill="none">
-          <rect x="8" y="16" width="56" height="40" rx="4" stroke="#444" stroke-width="1.5"/>
-          <line x1="19" y1="16" x2="19" y2="56" stroke="#444" stroke-width="4"/>
-          <line x1="27" y1="16" x2="27" y2="56" stroke="#444" stroke-width="1.5"/>
-          <line x1="33" y1="16" x2="33" y2="56" stroke="#333" stroke-width="3"/>
-          <line x1="40" y1="16" x2="40" y2="56" stroke="#444" stroke-width="1.5"/>
-          <line x1="46" y1="16" x2="46" y2="56" stroke="#444" stroke-width="2.5"/>
-          <line x1="52" y1="16" x2="52" y2="56" stroke="#444" stroke-width="1.5"/>
-          <line x1="8" y1="63" x2="64" y2="63" stroke="#00e87a" stroke-width="2" opacity=".45"/>
-        </svg>
-        <div class="sc-idle-txt">Prêt à scanner</div>
-      </div>
-
-      <!-- Boutons -->
-      <div class="sc-ctrl">
-        <button class="sc-btn sc-btn-primary" id="sc-btnStart" onclick="scStartScan()">📷 &nbsp;Scanner un livre</button>
-        <button class="sc-btn sc-btn-cancel"  id="sc-btnCancel" onclick="scCancelScan()">✕ &nbsp;Annuler</button>
-      </div>
-      <div class="sc-status muted" id="sc-status">Pointez la caméra vers le code-barres ISBN</div>
-
-      <!-- Saisie manuelle -->
-      <div class="sc-manual-sep">
-        <div class="sc-sep-line"></div>
-        <span class="sc-sep-txt">ou saisie manuelle</span>
-        <div class="sc-sep-line"></div>
-      </div>
-      <div class="sc-manual-wrap">
-        <input class="sc-manual-input" id="sc-manualISBN" type="tel" inputmode="numeric" pattern="[0-9]*"
-          placeholder="ex. 9782381950587" maxlength="17" autocomplete="off" spellcheck="false"
-          onkeydown="if(event.key==='Enter') scSearchManual()">
-        <button class="sc-btn-search" onclick="scSearchManual()" title="Rechercher">
-          <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Loader -->
-      <div id="sc-loader">
-        <div class="sc-spinner"></div>
-        <div class="sc-loader-txt">Consultation de 4 sources en parallèle…</div>
-        <div class="sc-src-pills">
-          <div class="sc-src-pill" id="sc-pill-google">Google Books</div>
-          <div class="sc-src-pill" id="sc-pill-open">Open Library</div>
-          <div class="sc-src-pill" id="sc-pill-inv">Inventaire.io</div>
-          <div class="sc-src-pill" id="sc-pill-bnf">BnF</div>
-        </div>
-      </div>
-
-      <!-- Résultat -->
-      <div id="sc-result">
-        <div class="sc-r-top">
-          <img class="sc-r-cover" id="sc-rCover" src="" alt="Couverture"
-            onerror="this.style.display='none';document.getElementById('sc-rCoverPh').style.display='flex'">
-          <div class="sc-r-cover-ph" id="sc-rCoverPh">
-            <svg width="26" height="26" fill="#444" viewBox="0 0 24 24"><path d="M6 2h12a2 2 0 012 2v16a2 2 0 01-2 2H6a2 2 0 01-2-2V4a2 2 0 012-2zm0 2v16h12V4H6zm2 2h8v2H8V6zm0 4h6v2H8v-2z"/></svg>
-          </div>
-          <div class="sc-r-info">
-            <div class="sc-r-title" id="sc-rTitle"></div>
-            <div class="sc-r-author" id="sc-rAuthor"></div>
-            <div class="sc-r-meta" id="sc-rMeta"></div>
-            <div class="sc-r-src" id="sc-rSrc"><div class="sc-r-src-dot"></div><span id="sc-rSrcTxt"></span></div>
-          </div>
-        </div>
-        <div class="sc-r-div"></div>
-        <div class="sc-r-summary collapsed" id="sc-rSummary"></div>
-        <div class="sc-r-more" id="sc-rMore" onclick="scToggleSummary()">▼ Voir le résumé</div>
-        <div class="sc-r-actions">
-          <button class="sc-btn-add" id="sc-btnAdd" onclick="scOpenDateModal()">
-            <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-            Ajouter à ma bibliothèque
-          </button>
-          <button class="sc-btn-again" onclick="scResetScanner()" title="Nouveau scan">↺</button>
-        </div>
-      </div>
-
-      <!-- Erreur -->
-      <div id="sc-errcard">
-        <div style="font-size:26px;margin-bottom:8px">⚠️</div>
-        <div class="sc-err-txt" id="sc-errTxt"></div>
-        <button class="sc-btn-retry" onclick="scResetScanner()">Réessayer</button>
-      </div>
-
-    </div><!-- /#scan-panel -->
-
+      <button id="addbtn" onclick="ajouterLivre()" disabled>+ Ajouter ce livre</button>
+    </div>
     <div class="tip"><div class="tipt">💡 Renouvellement</div><div class="tipb">Renouvelle sur <strong>renouvaud.ch</strong> ou à la bibliothèque. Durée standard : 28 jours.</div></div>
   </div>
 </div>
@@ -453,6 +243,7 @@ body{font-family:Georgia,serif;display:flex;flex-direction:column;max-width:430p
 <script>
 var KC='bib_card_v4',KB='bib_books_v4';
 var card=null,books=[],numVisible=false,menuOuvert=null,editOuvert=null,filtre='tous';
+var html5Qr=null;
 try{card=JSON.parse(localStorage.getItem(KC));}catch(e){}
 try{books=JSON.parse(localStorage.getItem(KB))||[];}catch(e){}
 function sauver(){try{localStorage.setItem(KC,JSON.stringify(card));localStorage.setItem(KB,JSON.stringify(books));}catch(e){}}
@@ -475,375 +266,97 @@ function openSetup(){
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   SCANNER COMPLET (Quagga + 4 sources parallèles)
-══════════════════════════════════════════════════════ */
-var SC_DURATION = 8;
-var SC_CIRC     = 2 * Math.PI * 24;
-var scScanning  = false, scQuaggaLive = false;
-var scScanTimer = null, scTickInterval = null;
-var scCurrentISBN = '', scCurrentBook = null, scSummaryOpen = false;
-
-/* ── Timer ── */
-function scStartTimer(){
-  var s=SC_DURATION;
-  var prog=document.getElementById('sc-tprog');
-  var num=document.getElementById('sc-tnum');
-  prog.style.stroke='#00e87a'; prog.style.strokeDashoffset='0'; num.textContent=s;
-  scTickInterval=setInterval(function(){
-    s--; num.textContent=s;
-    prog.style.strokeDashoffset=SC_CIRC*(1-s/SC_DURATION);
-    if(s<=3)prog.style.stroke='#ff3b3b';
-    if(s<=0)clearInterval(scTickInterval);
-  },1000);
-}
-function scStopTimer(){clearInterval(scTickInterval);scTickInterval=null;}
-
-/* ── Démarrer scan ── */
-function scStartScan(){
-  scResetUI(); scScanning=true;
-  document.getElementById('sc-vwrap').style.display='block';
-  document.getElementById('sc-idle').style.display='none';
-  document.getElementById('sc-btnStart').style.display='none';
-  document.getElementById('sc-btnCancel').style.display='block';
-  document.getElementById('sc-led').classList.add('on');
-  scSetStatus('Scan en cours… pointez vers le code-barres','scanning');
-  scStartTimer();
-  scScanTimer=setTimeout(function(){
-    if(scScanning&&!scCurrentISBN){
-      scStopScan();
-      scSetStatus('Aucun code-barres détecté — réessayez','timeout');
-      document.getElementById('sc-idle').style.display='flex';
-      document.getElementById('sc-btnStart').style.display='block';
-    }
-  },SC_DURATION*1000);
-  Quagga.init({
-    inputStream:{type:'LiveStream',target:document.getElementById('sc-viewport'),
-      constraints:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}},
-    locator:{patchSize:'medium',halfSample:true},
-    numOfWorkers:2,frequency:10,
-    decoder:{readers:['ean_reader','ean_8_reader']},
-    locate:true
-  },function(err){
-    if(err){scStopScan();scShowError("Impossible d'accéder à la caméra.\nVérifiez les autorisations dans Réglages > Safari.");return;}
-    scQuaggaLive=true; Quagga.start();
-  });
-  Quagga.onDetected(scOnDetected);
-}
-function scOnDetected(result){
-  if(!scScanning)return;
-  var code=result.codeResult.code;
-  if(!code||code.length<10)return;
-  scStopScan(); scSetISBN(code); scFetchBook(code);
-}
-function scStopScan(){
-  scScanning=false; clearTimeout(scScanTimer); scStopTimer();
-  document.getElementById('sc-led').classList.remove('on');
-  document.getElementById('sc-btnCancel').style.display='none';
-  document.getElementById('sc-beam').classList.add('paused');
-  if(scQuaggaLive){try{Quagga.offDetected(scOnDetected);Quagga.stop();}catch(e){}scQuaggaLive=false;}
-  setTimeout(function(){document.getElementById('sc-vwrap').style.display='none';},250);
-}
-function scCancelScan(){scStopScan();scResetScanner();}
-
-/* ── ISBN display ── */
-function scSetISBN(isbn){
-  scCurrentISBN=isbn;
-  var el=document.getElementById('sc-isbnVal');
-  el.textContent=isbn; el.classList.remove('empty');
-}
-function scClearISBN(){
-  scCurrentISBN='';
-  var el=document.getElementById('sc-isbnVal');
-  el.textContent='— — — — — — — — — — — — —'; el.classList.add('empty');
-}
-
-/* ── 4 Sources Parallèles — BnF prioritaire ── */
-function scScoreBook(b){
-  if(!b)return -1; var s=0;
-  if(b.title&&b.title!=='Titre inconnu')s+=2;
-  if(b.author&&b.author!=='Auteur inconnu')s+=2;
-  if(b.summary&&b.summary.length>40)s+=4;
-  if(b.cover)s+=3; if(b.publisher)s+=1; if(b.year)s+=1; if(b.pages)s+=1;
-  // BnF prioritaire : bonus important si elle a trouvé un résultat valide
-  if(b.source==='BnF'&&b.title&&b.title!=='Titre inconnu')s+=10;
-  return s;
-}
-function scMergeBooks(results){
-  var sorted=results.filter(Boolean).sort(function(a,b){return scScoreBook(b)-scScoreBook(a);});
-  if(!sorted.length)return null;
-  var best=Object.assign({},sorted[0]);
-  for(var i=1;i<sorted.length;i++){
-    var r=sorted[i];
-    if(!best.summary&&r.summary)best.summary=r.summary;
-    if(!best.cover&&r.cover)best.cover=r.cover;
-    if(!best.publisher&&r.publisher)best.publisher=r.publisher;
-    if(!best.year&&r.year)best.year=r.year;
-    if(!best.pages&&r.pages)best.pages=r.pages;
-  }
-  best.sourceAll=[...new Set(sorted.map(function(r){return r.source;}))];
-  best.source=sorted[0].source;
-  return best;
-}
-function scPill(id,state){var el=document.getElementById('sc-pill-'+id);if(el)el.className='sc-src-pill '+state;}
-
-function scFetchGoogle(isbn){
-  return fetch('https://www.googleapis.com/books/v1/volumes?q=isbn:'+isbn)
-    .then(function(r){return r.json();}).then(function(d){
-      if(!d.items||!d.items.length)return null;
-      var v=d.items[0].volumeInfo;
-      return{title:v.title||'Titre inconnu',author:(v.authors||['Auteur inconnu']).join(', '),publisher:v.publisher||'',year:(v.publishedDate||'').substring(0,4),pages:v.pageCount||'',summary:v.description||'',cover:((v.imageLinks&&(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail))||'').replace('http:','https:'),isbn:isbn,source:'Google Books'};
-    });
-}
-function scFetchOpenLib(isbn){
-  return fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')
-    .then(function(r){return r.json();}).then(function(d){
-      var info=d['ISBN:'+isbn];if(!info)return null;
-      var cover=info.cover?(info.cover.large||info.cover.medium||info.cover.small||''):'';
-      var summary=typeof info.notes==='string'?info.notes:(info.notes&&info.notes.value)||(info.excerpts&&info.excerpts[0]&&info.excerpts[0].text)||'';
-      return{title:info.title||'Titre inconnu',author:(info.authors||[]).map(function(a){return a.name;}).join(', ')||'Auteur inconnu',publisher:(info.publishers||[]).map(function(p){return p.name;}).join(', '),year:(info.publish_date&&(info.publish_date.match(/\d{4}/)||[])[0])||'',pages:info.number_of_pages||'',summary:summary,cover:cover,isbn:isbn,source:'Open Library'};
-    });
-}
-function scFetchInventaire(isbn){
-  return fetch('https://inventaire.io/api/entities?action=by-uris&uris=isbn:'+isbn)
-    .then(function(r){return r.json();}).then(function(d){
-      var entity=d.entities&&d.entities['isbn:'+isbn];if(!entity)return null;
-      var labels=entity.labels||{};var title=labels.fr||labels.en||Object.values(labels)[0]||'';
-      if(!title)return null;
-      var descs=entity.descriptions||{};var summary=descs.fr||descs.en||Object.values(descs)[0]||'';
-      var cover=entity.image&&entity.image.url?(entity.image.url.startsWith('http')?entity.image.url:'https://inventaire.io'+entity.image.url):'';
-      var claims=entity.claims||{};
-      var year='';var dv=claims['wdt:P577']&&claims['wdt:P577'][0];if(dv)year=String(dv).substring(0,4);
-      var pages=claims['wdt:P1104']&&claims['wdt:P1104'][0]||'';
-      var authorUris=(claims['wdt:P50']||[]).slice(0,2);
-      var ap=authorUris.length?
-        fetch('https://inventaire.io/api/entities?action=by-uris&uris='+encodeURIComponent(authorUris.join('|')))
-          .then(function(r){return r.json();}).then(function(ad){
-            var names=authorUris.map(function(u){var e=ad.entities&&ad.entities[u];if(!e)return null;var l=e.labels||{};return l.fr||l.en||Object.values(l)[0]||null;}).filter(Boolean);
-            return names.join(', ')||'Auteur inconnu';
-          }).catch(function(){return'Auteur inconnu';})
-        :Promise.resolve('Auteur inconnu');
-      return ap.then(function(author){return{title:title,author:author,publisher:'',year:year,pages:pages,summary:summary,cover:cover,isbn:isbn,source:'Inventaire.io'};});
-    });
-}
-function scFetchBnf(isbn){
-  var url='https://catalogue.bnf.fr/api/SRU?version=1.2&operation=searchRetrieve&query=bib.isbn+adj+"'+isbn+'"&recordSchema=dublincore&maximumRecords=1';
-  return fetch(url).then(function(r){return r.text();}).then(function(txt){
-    var parser=new DOMParser();var xml=parser.parseFromString(txt,'application/xml');
-    var records=xml.getElementsByTagNameNS('*','record');if(!records.length)return null;
-    var DC='http://purl.org/dc/elements/1.1/';
-    function dc(tag){var els=xml.getElementsByTagNameNS(DC,tag);return els.length?els[0].textContent.trim():'';}
-    function dcAll(tag){return Array.from(xml.getElementsByTagNameNS(DC,tag)).map(function(e){return e.textContent.trim();}).filter(Boolean);}
-    var title=dc('title');if(!title)return null;
-    var creators=dcAll('creator').map(function(c){return c.replace(/\s*\(\d{4}[-–]\d*\)\s*$/,'').trim();});
-    var author=creators.join(', ')||'Auteur inconnu';
-    var pubRaw=dc('publisher');
-    var publisher=pubRaw.includes(':')?pubRaw.split(':').slice(1).join(':').trim():pubRaw;
-    var year=(dc('date').match(/\d{4}/)||[])[0]||'';
-    var summary=dcAll('description').find(function(d){return d.length>30;})||'';
-    return{title:title,author:author,publisher:publisher,year:year,pages:'',summary:summary,cover:'',isbn:isbn,source:'BnF'};
+/* ===== SCANNER html5-qrcode ===== */
+function ouvrirScanner(){
+  document.getElementById('scanoverlay').classList.add('on');
+  html5Qr=new Html5Qrcode('qr-reader');
+  html5Qr.start(
+    {facingMode:'environment'},
+    {fps:10,qrbox:{width:280,height:120},formatsToSupport:[
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.UPC_A,
+      Html5QrcodeSupportedFormats.UPC_E
+    ]},
+    function(code){
+      fermerScanner();
+      rechercherISBN(code);
+    },
+    function(err){}
+  ).catch(function(err){
+    document.getElementById('scanoverlay').classList.remove('on');
+    alert('Caméra inaccessible : '+err);
   });
 }
 
-function scFetchBook(isbn){
-  scSetStatus('','');
-  scShowLoader(true);
-  scPill('google','active');scPill('open','active');scPill('inv','active');scPill('bnf','active');
-  var wrap=function(p,id){return p.then(function(b){scPill(id,b?'found':'done');return b;}).catch(function(){scPill(id,'done');return null;});};
-  Promise.all([
-    wrap(scFetchGoogle(isbn),'google'),
-    wrap(scFetchOpenLib(isbn),'open'),
-    wrap(scFetchInventaire(isbn),'inv'),
-    wrap(scFetchBnf(isbn),'bnf')
-  ]).then(function(results){
-    var merged=scMergeBooks(results.filter(Boolean));
-    scShowLoader(false);
-    if(merged){scCurrentBook=merged;scShowResult(merged);}
-    else{scShowError('Aucun livre trouvé pour l\'ISBN '+isbn+'.\nVérifiez que c\'est bien un code-barres de livre.');}
-  }).catch(function(){scShowLoader(false);scShowError('Erreur réseau — réessayez.');});
-}
-
-/* ── UI ── */
-function scShowLoader(on){
-  document.getElementById('sc-loader').style.display=on?'flex':'none';
-  document.getElementById('sc-result').style.display='none';
-  document.getElementById('sc-errcard').style.display='none';
-  document.getElementById('sc-idle').style.display='none';
-  if(!on)document.getElementById('sc-btnStart').style.display='block';
-}
-function scShowResult(b){
-  scShowLoader(false);
-  document.getElementById('sc-rTitle').textContent=b.title;
-  document.getElementById('sc-rAuthor').textContent=b.author;
-  var parts=[];if(b.year)parts.push(b.year);if(b.pages)parts.push(b.pages+' p.');if(b.publisher)parts.push(b.publisher);
-  document.getElementById('sc-rMeta').textContent=parts.join(' · ');
-  var srcTxt=document.getElementById('sc-rSrcTxt');
-  srcTxt.textContent=b.sourceAll&&b.sourceAll.length>1?b.source+' +'+(b.sourceAll.length-1):b.source;
-  var img=document.getElementById('sc-rCover'),ph=document.getElementById('sc-rCoverPh');
-  if(b.cover){img.src=b.cover;img.style.display='block';ph.style.display='none';}
-  else{img.style.display='none';ph.style.display='flex';}
-  var sumEl=document.getElementById('sc-rSummary'),moreEl=document.getElementById('sc-rMore');
-  scSummaryOpen=false;
-  if(b.summary){sumEl.textContent=b.summary;sumEl.classList.add('collapsed');moreEl.style.display='block';moreEl.textContent='▼ Voir le résumé';}
-  else{sumEl.textContent='Aucun résumé disponible.';sumEl.classList.remove('collapsed');moreEl.style.display='none';}
-  var btnAdd=document.getElementById('sc-btnAdd');
-  btnAdd.classList.remove('done');
-  btnAdd.innerHTML='<svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg> Ajouter à ma bibliothèque';
-  document.getElementById('sc-result').style.display='block';
-  document.getElementById('sc-btnStart').style.display='block';
-}
-function scShowError(msg){
-  document.getElementById('sc-errTxt').textContent=msg;
-  document.getElementById('sc-errcard').style.display='block';
-  document.getElementById('sc-idle').style.display='none';
-  document.getElementById('sc-btnStart').style.display='block';
-}
-function scSetStatus(msg,cls){
-  var el=document.getElementById('sc-status');el.textContent=msg;el.className='sc-status '+(cls||'muted');
-}
-function scToggleSummary(){
-  scSummaryOpen=!scSummaryOpen;
-  var s=document.getElementById('sc-rSummary'),m=document.getElementById('sc-rMore');
-  if(scSummaryOpen){s.classList.remove('collapsed');m.textContent='▲ Réduire';}
-  else{s.classList.add('collapsed');m.textContent='▼ Voir le résumé';}
-}
-function scResetUI(){
-  document.getElementById('sc-result').style.display='none';
-  document.getElementById('sc-errcard').style.display='none';
-  document.getElementById('sc-loader').style.display='none';
-  document.getElementById('sc-beam').classList.remove('paused');
-  document.getElementById('sc-tprog').style.stroke='#00e87a';
-  scCurrentBook=null;
-}
-function scResetScanner(){
-  scResetUI(); scClearISBN();
-  document.getElementById('sc-manualISBN').value='';
-  document.getElementById('sc-vwrap').style.display='none';
-  document.getElementById('sc-idle').style.display='flex';
-  document.getElementById('sc-btnStart').style.display='block';
-  document.getElementById('sc-btnCancel').style.display='none';
-  scSetStatus('Pointez la caméra vers le code-barres ISBN','muted');
-}
-function scSearchManual(){
-  var raw=document.getElementById('sc-manualISBN').value.replace(/[\s\-]/g,'');
-  if(!raw){scShowToast('⚠️ Saisissez un ISBN');return;}
-  if(raw.length<10){scShowToast('⚠️ ISBN trop court');return;}
-  if(raw.length>13){scShowToast('⚠️ ISBN trop long');return;}
-  if(!/^\d+$/.test(raw)){scShowToast('⚠️ Chiffres uniquement');return;}
-  scResetUI(); scSetISBN(raw);
-  document.getElementById('sc-idle').style.display='none';
-  scFetchBook(raw);
-}
-
-/* ── Modal dates ── */
-var scLastLivre = null;
-var scModalData  = null; // données du livre capturées à l'ouverture du modal
-
-function scOpenDateModal(){
-  if(!scCurrentBook)return;
-  // Capturer immédiatement toutes les données nécessaires
-  scModalData = {
-    title:  scCurrentBook.title,
-    author: scCurrentBook.author,
-    isbn:   scCurrentBook.isbn,
-    cover:  scCurrentBook.cover || ''
-  };
-  document.getElementById('sc-modal-book-title').textContent=scModalData.title;
-  var today=new Date().toISOString().split('T')[0];
-  var due=new Date();due.setDate(due.getDate()+28);
-  document.getElementById('sc-modal-bor').value=today;
-  document.getElementById('sc-modal-due').value=due.toISOString().split('T')[0];
-  // Réinitialiser l'état du modal
-  document.getElementById('sc-modal-form-btns').style.display='flex';
-  document.getElementById('sc-modal-done').style.display='none';
-  document.getElementById('sc-modal-row').style.display='flex';
-  document.getElementById('sc-modal-sub').textContent='Renseigne les dates pour ce livre';
-  document.getElementById('sc-date-modal').classList.add('on');
-}
-function scModalClose(){
-  document.getElementById('sc-date-modal').classList.remove('on');
-}
-function scModalConfirm(){
-  if(!scModalData){scShowToast('⚠️ Aucun livre sélectionné');return;}
-  var due=document.getElementById('sc-modal-due').value;
-  if(!due){scShowToast('⚠️ Date de retour requise');return;}
-  var coverVal=scModalData.cover&&scModalData.cover.startsWith('http')
-    ?scModalData.cover
-    :CVR[Math.floor(Math.random()*CVR.length)];
-  scLastLivre={
-    id:      Date.now(),
-    title:   scModalData.title,
-    author:  scModalData.author,
-    isbn:    scModalData.isbn,
-    borrowed:document.getElementById('sc-modal-bor').value,
-    due:     due,
-    cover:   coverVal
-  };
-  if(scModalData.isbn&&books.some(function(b){return b.isbn&&b.isbn===scModalData.isbn;})){
-    scModalClose();scShowToast('📚 Déjà dans vos emprunts');return;
+function fermerScanner(){
+  if(html5Qr){
+    html5Qr.stop().then(function(){
+      html5Qr.clear();
+      html5Qr=null;
+    }).catch(function(){html5Qr=null;});
   }
-  books.unshift(scLastLivre);sauver();mettreAJourAlertes();
-  // Passer à l'étape agenda
-  document.getElementById('sc-modal-form-btns').style.display='none';
-  document.getElementById('sc-modal-row').style.display='none';
-  document.getElementById('sc-modal-sub').textContent='Veux-tu ajouter la date de retour à ton agenda ?';
-  document.getElementById('sc-modal-done').style.display='flex';
-  var btnAdd=document.getElementById('sc-btnAdd');
-  if(btnAdd){btnAdd.classList.add('done');btnAdd.innerHTML='✓ &nbsp;Ajouté !';}
-}
-function scAddToCalendar(){
-  if(!scLastLivre)return;
-  var due=scLastLivre.due; // YYYY-MM-DD
-  var duePlus1=new Date(due);duePlus1.setDate(duePlus1.getDate()+1);
-  var duePlus1Str=duePlus1.toISOString().split('T')[0];
-  // Format ICS date journée entière : YYYYMMDD
-  var dtStart=due.replace(/-/g,'');
-  var dtEnd=duePlus1Str.replace(/-/g,'');
-  var now=new Date().toISOString().replace(/[-:.]/g,'').slice(0,15);
-  var uid=Math.random().toString(36).substr(2,9)+'@mabib.ch';
-  var summary='📚 Retour : '+scLastLivre.title+(scLastLivre.author?' — '+scLastLivre.author:'');
-  var desc='Livre emprunté à la Bibliothèque de Lausanne'
-    +(scLastLivre.author?'\\nAuteur : '+scLastLivre.author:'')
-    +(scLastLivre.isbn?'\\nISBN : '+scLastLivre.isbn:'')
-    +'\\nEmprunté le : '+scLastLivre.borrowed;
-  var ics='BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Ma Bibliothèque//FR\r\nCALSCALE:GREGORIAN\r\n';
-  ics+='BEGIN:VEVENT\r\n';
-  ics+='UID:'+uid+'\r\n';
-  ics+='DTSTAMP:'+now+'Z\r\n';
-  ics+='DTSTART;VALUE=DATE:'+dtStart+'\r\n';
-  ics+='DTEND;VALUE=DATE:'+dtEnd+'\r\n';
-  ics+='SUMMARY:'+summary.replace(/,/g,'\\,')+'\r\n';
-  ics+='DESCRIPTION:'+desc+'\r\n';
-  ics+='LOCATION:Bibliothèque de Lausanne\r\n';
-  ics+='BEGIN:VALARM\r\nTRIGGER:-PT12H\r\nACTION:DISPLAY\r\nDESCRIPTION:Rappel retour livre demain !\r\nEND:VALARM\r\n';
-  ics+='END:VEVENT\r\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url;
-  a.download=(scLastLivre.title||'retour').replace(/[^a-z0-9]/gi,'_')+'.ics';
-  document.body.appendChild(a);a.click();
-  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
-  scModalDone();
-}
-function scModalDone(){
-  scModalClose();
-  var msg=document.getElementById('okmsg');msg.style.display='block';
-  setTimeout(function(){msg.style.display='none';allerVers('tous');scResetScanner();},1200);
+  document.getElementById('scanoverlay').classList.remove('on');
 }
 
-/* ── Toast ── */
-function scShowToast(msg){
-  var t=document.getElementById('sc-toast');
-  t.textContent=msg;t.classList.add('show');
-  setTimeout(function(){t.classList.remove('show');},2800);
+/* ===== ISBN manuel ===== */
+function chkIsbn(val){
+  var isbn=val.replace(/[^0-9X]/gi,'');
+  if(isbn.length!==10&&isbn.length!==13)return;
+  rechercherISBN(isbn);
 }
 
-/* ══════════════════════════════════════════════════════
-   BIBLIOTHÈQUE (inchangé)
-══════════════════════════════════════════════════════ */
+function rechercherISBN(isbn){
+  var r=document.getElementById('scanresult');
+  r.className='';r.style.display='block';
+  r.textContent='🔍 Recherche '+isbn+'…';
+  document.getElementById('fisbn').value=isbn;
+  // 1. Essai Open Library (livres)
+  fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')
+    .then(function(res){return res.json();})
+    .then(function(data){
+      var key='ISBN:'+isbn;
+      if(data[key]){
+        var livre=data[key];
+        var titre=livre.title||'';
+        var auteurs=livre.authors?livre.authors.map(function(a){return a.name;}).join(', '):'';
+        document.getElementById('ftit').value=titre;
+        document.getElementById('faut').value=auteurs;
+        r.innerHTML='✅ <strong>'+titre+'</strong>'+(auteurs?'<br>'+auteurs:'');
+        chkForm();
+      } else {
+        // 2. Fallback UPC Item DB (DVD, Blu-ray, produits)
+        r.textContent='🔍 Recherche dans la base DVD/Blu-ray…';
+        fetch('https://api.upcitemdb.com/prod/trial/lookup?upc='+isbn)
+          .then(function(res){return res.json();})
+          .then(function(upc){
+            if(upc.items&&upc.items.length>0){
+              var item=upc.items[0];
+              var titre=item.title||'';
+              var marque=item.brand||'';
+              document.getElementById('ftit').value=titre;
+              document.getElementById('faut').value=marque;
+              r.innerHTML='✅ <strong>'+titre+'</strong>'+(marque?'<br>'+marque:'');
+              chkForm();
+            } else {
+              r.innerHTML='⚠️ Non trouvé. Code <strong>'+isbn+'</strong> enregistré — complète manuellement.';
+              chkForm();
+            }
+          })
+          .catch(function(){r.className='err';r.innerHTML='⚠️ Erreur réseau. Code enregistré.';chkForm();});
+      }
+    })
+    .catch(function(){r.className='err';r.innerHTML='⚠️ Erreur réseau. Code enregistré.';chkForm();});
+}
+
+/* ===== CARTE ===== */
 function dessinerBarcode(svgId,code){
-  try{JsBarcode('#'+svgId,code,{format:'CODE128',width:2.5,height:80,displayValue:true,fontSize:14,margin:8,background:'#ffffff',lineColor:'#000000'});document.getElementById(svgId).style.width='100%';document.getElementById(svgId).style.height='auto';}catch(e){}
+  try{
+    JsBarcode('#'+svgId,code,{format:'CODE128',width:2.5,height:80,displayValue:true,fontSize:14,margin:8,background:'#ffffff',lineColor:'#000000'});
+    document.getElementById(svgId).style.width='100%';
+    document.getElementById(svgId).style.height='auto';
+  }catch(e){}
 }
 function afficherCarte(){
   if(!card)return;
@@ -902,10 +415,17 @@ function afficherPage(page){
   menuOuvert=null;editOuvert=null;
   if(page==='emprunts')afficherLivres();
   if(page==='carte'){afficherCarte();mettreAJourAlertes();}
+  if(page==='ajouter'){
+    var f=document.getElementById('fbor');
+    if(!f.value)f.value=new Date().toISOString().split('T')[0];
+    document.getElementById('scanresult').style.display='none';
+  }
 }
 function allerVers(f){filtre=f;afficherPage('emprunts');activerFiltre(f);afficherLivres();}
 function changerFiltre(f){filtre=f;activerFiltre(f);afficherLivres();}
-function activerFiltre(f){['tous','retard','urgent','ok'].forEach(function(k){var b=document.getElementById('fb-'+k);if(b)b.classList.toggle('on',k===f);});}
+function activerFiltre(f){
+  ['tous','retard','urgent','ok'].forEach(function(k){var b=document.getElementById('fb-'+k);if(b)b.classList.toggle('on',k===f);});
+}
 function afficherLivres(){
   var list=document.getElementById('llist');
   var src=books.slice();
@@ -933,10 +453,8 @@ function faireGroupe(cls,label,liste){
 }
 function faireLivre(b){
   var d=joursRestants(b.due),cls=d<0?' ov':d<=3?' ur':'';
-  var coverHtml=b.cover&&b.cover.startsWith('http')?
-    '<img src="'+echapper(b.cover)+'" style="width:38px;height:54px;object-fit:cover;border-radius:5px;flex-shrink:0;align-self:flex-start;margin-top:1px;border:1px solid #e0c8a0" onerror="this.outerHTML=\'<span class=\\\"bemo\\\">📕</span>\'" alt="">':
-    '<span class="bemo">'+echapper(b.cover||'📕')+'</span>';
-  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+coverHtml+
+  return'<div class="book'+cls+'" id="bk-'+b.id+'">'+
+    '<span class="bemo">'+b.cover+'</span>'+
     '<div class="binf">'+
       '<div class="btit">'+echapper(b.title)+'</div>'+
       (b.author?'<div class="baut">'+echapper(b.author)+'</div>':'')+
@@ -991,14 +509,23 @@ function sauverEdit(id){
   sauver();mettreAJourAlertes();afficherLivres();editOuvert=null;
 }
 function supprimerLivre(id){books=books.filter(function(b){return b.id!==id;});sauver();mettreAJourAlertes();afficherLivres();menuOuvert=null;}
-function demarrer(){afficherCarte();afficherLivres();mettreAJourAlertes();}
+function chkForm(){document.getElementById('addbtn').disabled=!(document.getElementById('ftit').value.trim()&&document.getElementById('fdue').value);}
+function ajouterLivre(){
+  var livre={id:Date.now(),title:document.getElementById('ftit').value.trim(),author:document.getElementById('faut').value.trim(),isbn:document.getElementById('fisbn').value.trim(),borrowed:document.getElementById('fbor').value,due:document.getElementById('fdue').value,cover:CVR[Math.floor(Math.random()*CVR.length)]};
+  books.unshift(livre);sauver();mettreAJourAlertes();
+  document.getElementById('ftit').value='';document.getElementById('faut').value='';document.getElementById('fisbn').value='';document.getElementById('fdue').value='';
+  document.getElementById('addbtn').disabled=true;
+  document.getElementById('scanresult').style.display='none';
+  var msg=document.getElementById('okmsg');msg.style.display='block';
+  setTimeout(function(){msg.style.display='none';allerVers('tous');},1200);
+}
+function demarrer(){
+  afficherCarte();afficherLivres();mettreAJourAlertes();
+  document.getElementById('fbor').value=new Date().toISOString().split('T')[0];
+}
 window.addEventListener('load',function(){
   if(!card){}else{document.getElementById('setup').classList.add('off');demarrer();}
-  scResetScanner();
 });
 </script>
-
-<!-- Toast global -->
-<div style="position:fixed;bottom:calc(env(safe-area-inset-bottom,12px) + 18px);left:50%;transform:translateX(-50%) translateY(70px);background:#00e87a;color:#000;padding:10px 20px;border-radius:100px;font-family:sans-serif;font-size:13px;font-weight:700;letter-spacing:.04em;transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:9999;white-space:nowrap;pointer-events:none" id="sc-toast"></div>
 </body>
 </html>
