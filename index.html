@@ -672,8 +672,8 @@ function scFetchBook(isbn){
       // Fallback DVD/Blu-ray via UPC Item DB
       scFetchUpc(isbn).then(function(item){
         if(item){scCurrentBook=item;scShowResult(item);}
-        else{scShowError('Aucun résultat pour '+isbn+'.\nVérifiez le code-barres.');}
-      }).catch(function(){scShowError('Aucun résultat pour '+isbn+'.\nVérifiez le code-barres.');});
+        else{scShowError('Aucun résultat pour '+isbn+'.\nSaisis le titre manuellement.');setTimeout(function(){var t=document.getElementById('ftit');if(t){t.focus();t.scrollIntoView({behavior:'smooth'});}},400);}
+      }).catch(function(){scShowError('Aucun résultat pour '+isbn+'.\nSaisis le titre manuellement.');setTimeout(function(){var t=document.getElementById('ftit');if(t){t.focus();t.scrollIntoView({behavior:'smooth'});}},400);});
     }
   }).catch(function(){scShowLoader(false);scShowError('Erreur réseau — réessayez.');});
 }
