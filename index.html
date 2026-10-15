@@ -312,7 +312,6 @@ function rechercherISBN(isbn){
   r.className='';r.style.display='block';
   r.textContent='🔍 Recherche '+isbn+'…';
   document.getElementById('fisbn').value=isbn;
-  // 1. Essai Open Library (livres)
   fetch('https://openlibrary.org/api/books?bibkeys=ISBN:'+isbn+'&format=json&jscmd=data')
     .then(function(res){return res.json();})
     .then(function(data){
@@ -326,8 +325,7 @@ function rechercherISBN(isbn){
         r.innerHTML='✅ <strong>'+titre+'</strong>'+(auteurs?'<br>'+auteurs:'');
         chkForm();
       } else {
-        // 2. Fallback UPC Item DB (DVD, Blu-ray, produits)
-        r.textContent='🔍 Recherche dans la base DVD/Blu-ray…';
+        r.textContent='🔍 Recherche DVD/Blu-ray…';
         fetch('https://api.upcitemdb.com/prod/trial/lookup?upc='+isbn)
           .then(function(res){return res.json();})
           .then(function(upc){
@@ -344,7 +342,7 @@ function rechercherISBN(isbn){
               chkForm();
             }
           })
-          .catch(function(){r.className='err';r.innerHTML='⚠️ Erreur réseau. Code enregistré.';chkForm();});
+          .catch(function(){r.innerHTML='⚠️ Erreur réseau. Code <strong>'+isbn+'</strong> enregistré.';chkForm();});
       }
     })
     .catch(function(){r.className='err';r.innerHTML='⚠️ Erreur réseau. Code enregistré.';chkForm();});
